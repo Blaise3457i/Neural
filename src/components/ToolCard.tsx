@@ -44,13 +44,20 @@ export function ToolCard({ tool }: ToolCardProps) {
         <div className="flex items-center justify-between">
           <a 
             href={tool.link}
+            target="_blank"
+            rel="noopener noreferrer"
             className="text-sm font-semibold text-purple-600 dark:text-purple-400 flex items-center hover:underline"
           >
             Learn More
           </a>
-          <button className="p-2 rounded-lg bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-purple-600 hover:text-white dark:hover:bg-purple-600 transition-all">
+          <a 
+            href={tool.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-2 rounded-lg bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-purple-600 hover:text-white dark:hover:bg-purple-600 transition-all"
+          >
             <ExternalLink className="w-4 h-4" />
-          </button>
+          </a>
         </div>
       </div>
     </motion.div>

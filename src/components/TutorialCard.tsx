@@ -41,9 +41,14 @@ export function TutorialCard({ tutorial }: TutorialCardProps) {
         <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2 mb-6">
           {tutorial.description}
         </p>
-        <button className="w-full py-2.5 rounded-xl border-2 border-slate-100 dark:border-slate-700 text-sm font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+        <a 
+          href="https://www.youtube.com/results?search_query=ai+tutorial"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block w-full py-2.5 rounded-xl border-2 border-slate-100 dark:border-slate-700 text-sm font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors text-center"
+        >
           Watch Tutorial
-        </button>
+        </a>
       </div>
     </motion.div>
   );
