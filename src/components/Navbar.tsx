@@ -21,6 +21,7 @@ const NAV_LINKS = [
   { name: 'Prompts', path: '/prompts' },
   { name: 'Tutorials', path: '/tutorials' },
   { name: 'Blog', path: '/blog' },
+  { name: 'Contact', path: '/contact' },
 ];
 
 export function Navbar() {

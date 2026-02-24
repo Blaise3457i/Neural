@@ -39,7 +39,7 @@ export function Footer() {
               <li><Link to="/about" className="text-slate-500 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">About Us</Link></li>
               <li><Link to="/privacy" className="text-slate-500 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Privacy Policy</Link></li>
               <li><Link to="/privacy" className="text-slate-500 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Terms of Service</Link></li>
-              <li><Link to="/about" className="text-slate-500 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Contact</Link></li>
+              <li><Link to="/contact" className="text-slate-500 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Contact</Link></li>
             </ul>
           </div>
 
