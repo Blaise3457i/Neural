@@ -1,5 +1,6 @@
 import { Github, Twitter, Linkedin, Mail, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Logo } from './Logo';
 
 export function Footer() {
   return (
@@ -8,12 +9,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           <div className="col-span-1 md:col-span-1">
             <Link to="/" className="flex items-center space-x-2 mb-6">
-              <img 
-                src="/neural-logo.png" 
-                alt="Neural Logo" 
-                className="w-8 h-8 object-contain"
-                referrerPolicy="no-referrer"
-              />
+              <Logo className="w-8 h-8" />
               <span className="text-lg font-bold dark:text-white">Neural</span>
             </Link>
             <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6">

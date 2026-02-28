@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useDarkMode } from '../hooks/useDarkMode';
 import { cn } from '../lib/utils';
+import { Logo } from './Logo';
 
 const NAV_LINKS = [
   { name: 'Home', path: '/' },
@@ -62,12 +63,7 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
           <Link to="/" className="flex items-center space-x-2 group">
-            <img 
-              src="/neural-logo.png" 
-              alt="Neural Logo" 
-              className="w-10 h-10 object-contain group-hover:scale-110 transition-transform"
-              referrerPolicy="no-referrer"
-            />
+            <Logo className="w-10 h-10 group-hover:scale-110 transition-transform" />
             <span className={cn(
               "text-xl font-bold transition-colors",
               isTransparent ? "text-white" : "text-slate-900 dark:text-white"
