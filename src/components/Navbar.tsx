@@ -62,14 +62,17 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
           <Link to="/" className="flex items-center space-x-2 group">
-            <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/20 group-hover:scale-110 transition-transform">
-              <span className="text-white font-bold text-xl">AI</span>
-            </div>
+            <img 
+              src="/neural-logo.png" 
+              alt="Neural Logo" 
+              className="w-10 h-10 object-contain group-hover:scale-110 transition-transform"
+              referrerPolicy="no-referrer"
+            />
             <span className={cn(
               "text-xl font-bold transition-colors",
               isTransparent ? "text-white" : "text-slate-900 dark:text-white"
             )}>
-              Free Hub
+              Neural
             </span>
           </Link>
 

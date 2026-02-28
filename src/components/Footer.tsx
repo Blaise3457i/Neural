@@ -8,10 +8,13 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           <div className="col-span-1 md:col-span-1">
             <Link to="/" className="flex items-center space-x-2 mb-6">
-              <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">AI</span>
-              </div>
-              <span className="text-lg font-bold dark:text-white">AI Free Hub</span>
+              <img 
+                src="/neural-logo.png" 
+                alt="Neural Logo" 
+                className="w-8 h-8 object-contain"
+                referrerPolicy="no-referrer"
+              />
+              <span className="text-lg font-bold dark:text-white">Neural</span>
             </Link>
             <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6">
               The ultimate destination for discovering free AI tools, curated prompts, and expert tutorials to boost your productivity.
@@ -60,7 +63,7 @@ export function Footer() {
         </div>
 
         <div className="border-t border-slate-200 dark:border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 text-xs text-slate-400">
-          <p>© 2026 AI Free Hub. All rights reserved.</p>
+          <p>© 2026 Neural. All rights reserved.</p>
           <div className="flex space-x-6">
             <Link to="/privacy" className="hover:text-purple-600 transition-colors">Privacy</Link>
             <Link to="/privacy" className="hover:text-purple-600 transition-colors">Terms</Link>

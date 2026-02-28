@@ -6,9 +6,9 @@ export function About() {
     <div className="pt-32 pb-24 min-h-screen">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-20">
-          <h1 className="text-4xl lg:text-6xl font-black text-slate-900 dark:text-white mb-6">About AI Free Hub</h1>
+          <h1 className="text-4xl lg:text-6xl font-black text-slate-900 dark:text-white mb-6">About Neural</h1>
           <p className="text-xl text-slate-500 dark:text-slate-400 leading-relaxed">
-            Founded by <span className="text-purple-600 dark:text-purple-400 font-bold">UWURUKUNDO BLAISE</span>, AI Free Hub is dedicated to making artificial intelligence accessible to everyone by providing high-quality, free resources.
+            Founded by <span className="text-purple-600 dark:text-purple-400 font-bold">UWURUKUNDO BLAISE</span>, Neural is dedicated to making artificial intelligence accessible to everyone by providing high-quality, free resources.
           </p>
         </div>
 
@@ -34,9 +34,9 @@ export function About() {
         </div>
 
         <div className="prose prose-slate dark:prose-invert max-w-none">
-          <h2 className="text-3xl font-black mb-8">Why AI Free Hub?</h2>
+          <h2 className="text-3xl font-black mb-8">Why Neural?</h2>
           <p className="text-lg text-slate-600 dark:text-slate-400 mb-6">
-            The AI landscape is evolving rapidly, but many of the most innovative tools are hidden behind paywalls or complex interfaces. AI Free Hub was created to solve this problem by offering a central, easy-to-navigate repository of free AI resources.
+            The AI landscape is evolving rapidly, but many of the most innovative tools are hidden behind paywalls or complex interfaces. Neural was created to solve this problem by offering a central, easy-to-navigate repository of free AI resources.
           </p>
           <p className="text-lg text-slate-600 dark:text-slate-400 mb-12">
             Whether you're a student, a creative professional, or a tech enthusiast, our platform provides you with the tools you need to harness the power of AI without any financial barriers.

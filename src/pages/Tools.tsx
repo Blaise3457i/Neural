@@ -153,7 +153,7 @@ export function Tools() {
               <p className="text-slate-500 dark:text-slate-400 leading-relaxed">It depends on the specific tool's license. Open-source models like Stable Diffusion often allow commercial use, while others may restrict free-tier outputs to personal use. Always check the individual tool's terms of service.</p>
             </div>
             <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-100 dark:border-slate-700">
-              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">How often is the AI Free Hub directory updated?</h3>
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">How often is the Neural directory updated?</h3>
               <p className="text-slate-500 dark:text-slate-400 leading-relaxed">We update our directory daily to include the latest releases in the AI world. Our team manually verifies each tool to ensure it meets our quality and "free-to-use" standards.</p>
             </div>
           </div>

@@ -229,9 +229,9 @@ export function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div>
-              <h2 className="text-4xl lg:text-5xl font-black text-slate-900 dark:text-white mb-8">Why Choose AI Free Hub?</h2>
+              <h2 className="text-4xl lg:text-5xl font-black text-slate-900 dark:text-white mb-8">Why Choose Neural?</h2>
               <p className="text-lg text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
-                In a world where artificial intelligence is rapidly changing how we work and create, finding the right tools shouldn't be expensive. AI Free Hub is your dedicated resource for discovering the most powerful <strong>free AI tools</strong> and <strong>AI prompts</strong> available today.
+                In a world where artificial intelligence is rapidly changing how we work and create, finding the right tools shouldn't be expensive. Neural is your dedicated resource for discovering the most powerful <strong>free AI tools</strong> and <strong>AI prompts</strong> available today.
               </p>
               <p className="text-lg text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">
                 Whether you're looking for <strong>free AI image generators</strong> like Stable Diffusion, <strong>AI video creation tools</strong>, or <strong>ChatGPT prompts</strong> to enhance your workflow, our curated directory has everything you need to stay ahead of the curve.
@@ -251,7 +251,7 @@ export function Home() {
               <div className="aspect-square rounded-[3rem] overflow-hidden shadow-2xl shadow-purple-500/20">
                 <img 
                   src="https://picsum.photos/seed/ai-seo/800/800" 
-                  alt="AI Free Hub - The Best Free AI Tools Directory" 
+                  alt="Neural - The Best Free AI Tools Directory" 
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
                 />

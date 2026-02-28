@@ -15,7 +15,7 @@ export function Privacy() {
           <section>
             <h2 className="text-2xl font-bold mb-6">2. Cookies Usage</h2>
             <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
-              AI Free Hub uses cookies to enhance your browsing experience. Cookies are small data files stored on your device that help us remember your preferences and understand how you interact with our site. You can choose to disable cookies through your browser settings, but this may affect the functionality of some parts of our website.
+              Neural uses cookies to enhance your browsing experience. Cookies are small data files stored on your device that help us remember your preferences and understand how you interact with our site. You can choose to disable cookies through your browser settings, but this may affect the functionality of some parts of our website.
             </p>
           </section>
 
