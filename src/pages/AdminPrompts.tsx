@@ -12,6 +12,8 @@ import {
   Image as ImageIcon
 } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 
 interface Prompt {
   id: string;
@@ -19,7 +21,7 @@ interface Prompt {
   category: string;
   badge: string;
   outputImage: string | null;
-  published: number;
+  published: boolean;
 }
 
 export function AdminPrompts() {
@@ -41,9 +43,16 @@ export function AdminPrompts() {
   const fetchPrompts = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/admin/prompts');
-      const data = await response.json();
-      setPrompts(data);
+      const promptsCollection = collection(db, 'prompts');
+      const promptsSnapshot = await getDocs(promptsCollection).catch(e => {
+        console.warn('Prompts collection inaccessible', e);
+        return { docs: [] };
+      });
+      const promptsList = (promptsSnapshot as any).docs.map((doc: any) => ({
+        id: doc.id,
+        ...doc.data()
+      })) as Prompt[];
+      setPrompts(promptsList);
     } catch (err) {
       console.error('Failed to fetch prompts', err);
     } finally {
@@ -63,7 +72,7 @@ export function AdminPrompts() {
         category: prompt.category,
         badge: prompt.badge,
         outputImage: prompt.outputImage || '',
-        published: !!prompt.published
+        published: prompt.published
       });
     } else {
       setEditingPrompt(null);
@@ -80,22 +89,17 @@ export function AdminPrompts() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const url = editingPrompt ? `/api/admin/prompts/${editingPrompt.id}` : '/api/admin/prompts';
-    const method = editingPrompt ? 'PUT' : 'POST';
 
     try {
-      const response = await fetch(url, {
-        method,
-        headers: { 
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      });
-
-      if (response.ok) {
-        setIsModalOpen(false);
-        fetchPrompts();
+      if (editingPrompt) {
+        const promptDoc = doc(db, 'prompts', editingPrompt.id);
+        await updateDoc(promptDoc, formData);
+      } else {
+        const promptsCollection = collection(db, 'prompts');
+        await addDoc(promptsCollection, formData);
       }
+      setIsModalOpen(false);
+      fetchPrompts();
     } catch (err) {
       console.error('Failed to save prompt', err);
     }
@@ -105,13 +109,9 @@ export function AdminPrompts() {
     if (!confirm('Are you sure you want to delete this prompt?')) return;
 
     try {
-      const response = await fetch(`/api/admin/prompts/${id}`, {
-        method: 'DELETE'
-      });
-
-      if (response.ok) {
-        fetchPrompts();
-      }
+      const promptDoc = doc(db, 'prompts', id);
+      await deleteDoc(promptDoc);
+      fetchPrompts();
     } catch (err) {
       console.error('Failed to delete prompt', err);
     }

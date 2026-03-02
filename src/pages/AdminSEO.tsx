@@ -10,6 +10,8 @@ import {
   ExternalLink
 } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { collection, getDocs, setDoc, doc } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 
 interface PageSEO {
   page_path: string;
@@ -30,9 +32,16 @@ export function AdminSEO() {
   const fetchSEO = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/admin/seo');
-      const data = await response.json();
-      setSeoList(data);
+      const seoCollection = collection(db, 'page_seo');
+      const seoSnapshot = await getDocs(seoCollection).catch(e => {
+        console.warn('SEO collection inaccessible', e);
+        return { docs: [] };
+      });
+      const seoData = (seoSnapshot as any).docs.map((doc: any) => ({
+        page_path: doc.id,
+        ...doc.data()
+      })) as PageSEO[];
+      setSeoList(seoData);
     } catch (err) {
       console.error('Failed to fetch SEO settings', err);
     } finally {
@@ -52,18 +61,19 @@ export function AdminSEO() {
     setSuccess(false);
 
     try {
-      const response = await fetch('/api/admin/seo', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(editingPage)
-      });
+      const seoDoc = doc(db, 'page_seo', editingPage.page_path);
+      const updateData = {
+        title: editingPage.title,
+        description: editingPage.description,
+        keywords: editingPage.keywords,
+        updated_at: new Date().toISOString()
+      };
+      await setDoc(seoDoc, updateData, { merge: true });
 
-      if (response.ok) {
-        setSuccess(true);
-        setEditingPage(null);
-        fetchSEO();
-        setTimeout(() => setSuccess(false), 3000);
-      }
+      setSuccess(true);
+      setEditingPage(null);
+      fetchSEO();
+      setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
       console.error('Failed to save SEO settings', err);
     } finally {

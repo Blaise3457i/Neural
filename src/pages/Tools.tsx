@@ -3,8 +3,10 @@ import { Search, Filter, SlidersHorizontal, ShieldCheck, Loader2 } from 'lucide-
 import { ToolCard } from '../components/ToolCard';
 import { SearchBar } from '../components/SearchBar';
 import { ProviderCard } from '../components/ProviderCard';
-import { PROVIDERS } from '../data/mockData';
+import { PROVIDERS } from '../constants/providers';
 import { useSearchParams } from 'react-router-dom';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 
 const CATEGORIES = ['All', 'Image', 'Video', 'Audio', 'Text', 'Productivity', 'Misc'];
 
@@ -18,9 +20,16 @@ export function Tools() {
   useEffect(() => {
     const fetchTools = async () => {
       try {
-        const response = await fetch('/api/tools');
-        const data = await response.json();
-        setTools(data);
+        const toolsCollection = collection(db, 'tools');
+        const toolsSnapshot = await getDocs(toolsCollection).catch(e => {
+          console.warn('Tools collection inaccessible', e);
+          return { docs: [] };
+        });
+        const toolsList = (toolsSnapshot as any).docs.map((doc: any) => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setTools(toolsList);
       } catch (err) {
         console.error('Failed to fetch tools', err);
       } finally {

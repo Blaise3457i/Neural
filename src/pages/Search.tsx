@@ -1,33 +1,64 @@
 import { useSearchParams, Link } from 'react-router-dom';
-import { useMemo } from 'react';
-import { Search as SearchIcon, Zap, Sparkles, BookOpen, Building2 } from 'lucide-react';
+import { useMemo, useState, useEffect } from 'react';
+import { Search as SearchIcon, Zap, Sparkles, BookOpen, Building2, Loader2 } from 'lucide-react';
 import { ToolCard } from '../components/ToolCard';
 import { PromptCard } from '../components/PromptCard';
 import { TutorialCard } from '../components/TutorialCard';
 import { ProviderCard } from '../components/ProviderCard';
-import { TOOLS, PROMPTS, TUTORIALS, PROVIDERS } from '../data/mockData';
+import { PROVIDERS } from '../constants/providers';
 import { motion } from 'motion/react';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 
 export function Search() {
   const [searchParams] = useSearchParams();
   const query = searchParams.get('q') || '';
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<{ tools: any[], prompts: any[], tutorials: any[] }>({
+    tools: [],
+    prompts: [],
+    tutorials: []
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [toolsSnap, promptsSnap, tutorialsSnap] = await Promise.all([
+          getDocs(collection(db, 'tools')).catch(e => { console.warn('Tools collection inaccessible', e); return { docs: [] }; }),
+          getDocs(collection(db, 'prompts')).catch(e => { console.warn('Prompts collection inaccessible', e); return { docs: [] }; }),
+          getDocs(collection(db, 'tutorials')).catch(e => { console.warn('Tutorials collection inaccessible', e); return { docs: [] }; })
+        ]);
+        
+        setData({
+          tools: (toolsSnap as any).docs.map((doc: any) => ({ id: doc.id, ...doc.data() })),
+          prompts: (promptsSnap as any).docs.map((doc: any) => ({ id: doc.id, ...doc.data() })),
+          tutorials: (tutorialsSnap as any).docs.map((doc: any) => ({ id: doc.id, ...doc.data() }))
+        });
+      } catch (err) {
+        console.error('Failed to fetch search data', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   const results = useMemo(() => {
     if (!query) return { tools: [], prompts: [], tutorials: [], providers: [] };
 
     const q = query.toLowerCase();
     return {
-      tools: TOOLS.filter(t => 
+      tools: data.tools.filter(t => 
         t.name.toLowerCase().includes(q) || 
         t.description.toLowerCase().includes(q) ||
         t.category.toLowerCase().includes(q)
       ),
-      prompts: PROMPTS.filter(p => 
+      prompts: data.prompts.filter(p => 
         p.text.toLowerCase().includes(q) ||
         p.category.toLowerCase().includes(q) ||
         p.badge.toLowerCase().includes(q)
       ),
-      tutorials: TUTORIALS.filter(t => 
+      tutorials: data.tutorials.filter(t => 
         t.title.toLowerCase().includes(q) || 
         t.description.toLowerCase().includes(q) ||
         t.category.toLowerCase().includes(q)
@@ -40,9 +71,17 @@ export function Search() {
         'providers'.includes(q)
       ),
     };
-  }, [query]);
+  }, [query, data]);
 
   const totalResults = results.tools.length + results.prompts.length + results.tutorials.length + results.providers.length;
+
+  if (loading) {
+    return (
+      <div className="pt-32 pb-24 min-h-screen flex items-center justify-center">
+        <Loader2 className="w-10 h-10 animate-spin text-purple-600" />
+      </div>
+    );
+  }
 
   return (
     <div className="pt-32 pb-24 min-h-screen">

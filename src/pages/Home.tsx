@@ -6,7 +6,8 @@ import { ToolCard } from '../components/ToolCard';
 import { SearchBar } from '../components/SearchBar';
 import { PromptCard } from '../components/PromptCard';
 import { TutorialCard } from '../components/TutorialCard';
-import { TUTORIALS } from '../data/mockData';
+import { collection, getDocs, limit, query } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 
 const HERO_VIDEOS = [
   'https://cdn.pixabay.com/video/2023/10/20/185834-876356710_large.mp4',
@@ -17,29 +18,33 @@ export function Home() {
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [tools, setTools] = useState<any[]>([]);
   const [prompts, setPrompts] = useState<any[]>([]);
+  const [tutorials, setTutorials] = useState<any[]>([]);
   const [settings, setSettings] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [toolsRes, promptsRes, settingsRes] = await Promise.all([
-          fetch('/api/tools'),
-          fetch('/api/prompts'),
-          fetch('/api/admin/settings') // This might fail if not admin, but we can make a public settings route if needed. For now, let's assume it's public or handle error.
+        const [toolsSnap, promptsSnap, tutorialsSnap] = await Promise.all([
+          getDocs(collection(db, 'tools')).catch(e => { console.warn('Tools collection inaccessible', e); return { docs: [] }; }),
+          getDocs(collection(db, 'prompts')).catch(e => { console.warn('Prompts collection inaccessible', e); return { docs: [] }; }),
+          getDocs(collection(db, 'tutorials')).catch(e => { console.warn('Tutorials collection inaccessible', e); return { docs: [] }; })
         ]);
         
-        const toolsData = await toolsRes.json();
-        const promptsData = await promptsRes.json();
-        
-        setTools(toolsData);
-        setPrompts(promptsData);
+        setTools((toolsSnap as any).docs.map((doc: any) => ({ id: doc.id, ...doc.data() })));
+        setPrompts((promptsSnap as any).docs.map((doc: any) => ({ id: doc.id, ...doc.data() })));
+        setTutorials((tutorialsSnap as any).docs.map((doc: any) => ({ id: doc.id, ...doc.data() })));
 
-        if (settingsRes.ok) {
-          const settingsData = await settingsRes.json();
+        try {
+          const settingsSnap = await getDocs(collection(db, 'settings'));
           const settingsMap: Record<string, string> = {};
-          settingsData.forEach((s: any) => settingsMap[s.key] = s.value);
+          settingsSnap.docs.forEach(doc => {
+            const data = doc.data();
+            settingsMap[data.key] = data.value;
+          });
           setSettings(settingsMap);
+        } catch (e) {
+          console.warn('Settings collection not found or inaccessible', e);
         }
       } catch (err) {
         console.error('Failed to fetch home data', err);
@@ -263,7 +268,7 @@ export function Home() {
             </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-12">
-            {TUTORIALS.map(tutorial => (
+            {tutorials.slice(0, 2).map(tutorial => (
               <TutorialCard key={tutorial.id} tutorial={tutorial} />
             ))}
           </div>

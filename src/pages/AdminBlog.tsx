@@ -13,6 +13,8 @@ import {
   FileText
 } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 
 interface BlogPost {
   id: string;
@@ -21,8 +23,8 @@ interface BlogPost {
   thumbnail: string;
   date: string;
   content: string | null;
-  trending: number;
-  published: number;
+  trending: boolean;
+  published: boolean;
 }
 
 export function AdminBlog() {
@@ -46,9 +48,16 @@ export function AdminBlog() {
   const fetchPosts = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/admin/blog');
-      const data = await response.json();
-      setPosts(data);
+      const blogsCollection = collection(db, 'blogs');
+      const blogsSnapshot = await getDocs(blogsCollection).catch(e => {
+        console.warn('Blogs collection inaccessible', e);
+        return { docs: [] };
+      });
+      const blogsList = (blogsSnapshot as any).docs.map((doc: any) => ({
+        id: doc.id,
+        ...doc.data()
+      })) as BlogPost[];
+      setPosts(blogsList);
     } catch (err) {
       console.error('Failed to fetch posts', err);
     } finally {
@@ -69,8 +78,8 @@ export function AdminBlog() {
         thumbnail: post.thumbnail,
         date: post.date,
         content: post.content || '',
-        trending: !!post.trending,
-        published: !!post.published
+        trending: post.trending,
+        published: post.published
       });
     } else {
       setEditingPost(null);
@@ -89,22 +98,17 @@ export function AdminBlog() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const url = editingPost ? `/api/admin/blog/${editingPost.id}` : '/api/admin/blog';
-    const method = editingPost ? 'PUT' : 'POST';
 
     try {
-      const response = await fetch(url, {
-        method,
-        headers: { 
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      });
-
-      if (response.ok) {
-        setIsModalOpen(false);
-        fetchPosts();
+      if (editingPost) {
+        const postDoc = doc(db, 'blogs', editingPost.id);
+        await updateDoc(postDoc, formData);
+      } else {
+        const blogsCollection = collection(db, 'blogs');
+        await addDoc(blogsCollection, formData);
       }
+      setIsModalOpen(false);
+      fetchPosts();
     } catch (err) {
       console.error('Failed to save post', err);
     }
@@ -114,13 +118,9 @@ export function AdminBlog() {
     if (!confirm('Are you sure you want to delete this post?')) return;
 
     try {
-      const response = await fetch(`/api/admin/blog/${id}`, {
-        method: 'DELETE'
-      });
-
-      if (response.ok) {
-        fetchPosts();
-      }
+      const postDoc = doc(db, 'blogs', id);
+      await deleteDoc(postDoc);
+      fetchPosts();
     } catch (err) {
       console.error('Failed to delete post', err);
     }

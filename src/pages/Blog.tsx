@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { BlogCard } from '../components/BlogCard';
 import { Loader2 } from 'lucide-react';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 
 export function Blog() {
   const [posts, setPosts] = useState<any[]>([]);
@@ -9,9 +11,16 @@ export function Blog() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await fetch('/api/blog');
-        const data = await response.json();
-        setPosts(data);
+        const blogsCollection = collection(db, 'blogs');
+        const blogsSnapshot = await getDocs(blogsCollection).catch(e => {
+          console.warn('Blogs collection inaccessible', e);
+          return { docs: [] };
+        });
+        const blogsList = (blogsSnapshot as any).docs.map((doc: any) => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setPosts(blogsList);
       } catch (err) {
         console.error('Failed to fetch blog posts', err);
       } finally {

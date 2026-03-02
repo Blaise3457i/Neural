@@ -13,16 +13,18 @@ import {
   MoreVertical
 } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 
 interface Tool {
   id: string;
   name: string;
   description: string;
   category: string;
-  isFree: number;
+  isFree: boolean;
   image: string;
   link: string;
-  published: number;
+  published: boolean;
 }
 
 export function AdminTools() {
@@ -46,9 +48,16 @@ export function AdminTools() {
   const fetchTools = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/admin/tools');
-      const data = await response.json();
-      setTools(data);
+      const toolsCollection = collection(db, 'tools');
+      const toolsSnapshot = await getDocs(toolsCollection).catch(e => {
+        console.warn('Tools collection inaccessible', e);
+        return { docs: [] };
+      });
+      const toolsList = (toolsSnapshot as any).docs.map((doc: any) => ({
+        id: doc.id,
+        ...doc.data()
+      })) as Tool[];
+      setTools(toolsList);
     } catch (err) {
       console.error('Failed to fetch tools', err);
     } finally {
@@ -67,10 +76,10 @@ export function AdminTools() {
         name: tool.name,
         description: tool.description,
         category: tool.category,
-        isFree: !!tool.isFree,
+        isFree: tool.isFree,
         image: tool.image,
         link: tool.link,
-        published: !!tool.published
+        published: tool.published
       });
     } else {
       setEditingTool(null);
@@ -89,22 +98,17 @@ export function AdminTools() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const url = editingTool ? `/api/admin/tools/${editingTool.id}` : '/api/admin/tools';
-    const method = editingTool ? 'PUT' : 'POST';
 
     try {
-      const response = await fetch(url, {
-        method,
-        headers: { 
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      });
-
-      if (response.ok) {
-        setIsModalOpen(false);
-        fetchTools();
+      if (editingTool) {
+        const toolDoc = doc(db, 'tools', editingTool.id);
+        await updateDoc(toolDoc, formData);
+      } else {
+        const toolsCollection = collection(db, 'tools');
+        await addDoc(toolsCollection, formData);
       }
+      setIsModalOpen(false);
+      fetchTools();
     } catch (err) {
       console.error('Failed to save tool', err);
     }
@@ -114,13 +118,9 @@ export function AdminTools() {
     if (!confirm('Are you sure you want to delete this tool?')) return;
 
     try {
-      const response = await fetch(`/api/admin/tools/${id}`, {
-        method: 'DELETE'
-      });
-
-      if (response.ok) {
-        fetchTools();
-      }
+      const toolDoc = doc(db, 'tools', id);
+      await deleteDoc(toolDoc);
+      fetchTools();
     } catch (err) {
       console.error('Failed to delete tool', err);
     }

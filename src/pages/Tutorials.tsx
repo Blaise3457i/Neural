@@ -1,16 +1,41 @@
-import { useState } from 'react';
-import { BookOpen } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { BookOpen, Loader2 } from 'lucide-react';
 import { TutorialCard } from '../components/TutorialCard';
 import { SearchBar } from '../components/SearchBar';
-import { TUTORIALS } from '../data/mockData';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 
 const CATEGORIES = ['All', 'AI Art', 'AI Writing', 'AI Automation', 'Marketing'];
 
 export function Tutorials() {
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
+  const [tutorials, setTutorials] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredTutorials = TUTORIALS.filter(tut => {
+  useEffect(() => {
+    const fetchTutorials = async () => {
+      try {
+        const tutorialsCollection = collection(db, 'tutorials');
+        const tutorialsSnapshot = await getDocs(tutorialsCollection).catch(e => {
+          console.warn('Tutorials collection inaccessible', e);
+          return { docs: [] };
+        });
+        const tutorialsList = (tutorialsSnapshot as any).docs.map((doc: any) => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setTutorials(tutorialsList);
+      } catch (err) {
+        console.error('Failed to fetch tutorials', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTutorials();
+  }, []);
+
+  const filteredTutorials = tutorials.filter(tut => {
     const q = searchQuery.toLowerCase();
     const matchesCategory = activeCategory === 'All' || tut.category === activeCategory;
     const matchesSearch = tut.title.toLowerCase().includes(q) || 
@@ -53,7 +78,11 @@ export function Tutorials() {
         </div>
 
         {/* Grid */}
-        {filteredTutorials.length > 0 ? (
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="w-10 h-10 animate-spin text-purple-600" />
+          </div>
+        ) : filteredTutorials.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-12">
             {filteredTutorials.map(tutorial => (
               <TutorialCard key={tutorial.id} tutorial={tutorial} />

@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { 
   Upload, 
@@ -11,12 +11,47 @@ import {
   X
 } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { collection, getDocs, addDoc, deleteDoc, doc, query, orderBy } from 'firebase/firestore';
+import { db } from '../lib/firebase';
+
+interface MediaFile {
+  id: string;
+  name: string;
+  url: string;
+  createdAt: any;
+}
 
 export function AdminMedia() {
   const [uploading, setUploading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState<string | null>(null);
-  const [files, setFiles] = useState<{name: string, url: string}[]>([]);
+  const [files, setFiles] = useState<MediaFile[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const fetchFiles = async () => {
+    setLoading(true);
+    try {
+      const mediaCollection = collection(db, 'media');
+      const q = query(mediaCollection, orderBy('createdAt', 'desc'));
+      const mediaSnapshot = await getDocs(q).catch(e => {
+        console.warn('Media collection inaccessible', e);
+        return { docs: [] };
+      });
+      const mediaList = (mediaSnapshot as any).docs.map((doc: any) => ({
+        id: doc.id,
+        ...doc.data()
+      })) as MediaFile[];
+      setFiles(mediaList);
+    } catch (err) {
+      console.error('Failed to fetch media', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchFiles();
+  }, []);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -34,13 +69,29 @@ export function AdminMedia() {
 
       const data = await response.json();
       if (response.ok) {
-        setFiles([{ name: file.name, url: data.url }, ...files]);
+        const mediaCollection = collection(db, 'media');
+        await addDoc(mediaCollection, {
+          name: file.name,
+          url: data.url,
+          createdAt: new Date()
+        });
+        fetchFiles();
       }
     } catch (err) {
       console.error('Upload failed', err);
     } finally {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this media?')) return;
+    try {
+      await deleteDoc(doc(db, 'media', id));
+      fetchFiles();
+    } catch (err) {
+      console.error('Delete failed', err);
     }
   };
 
@@ -79,8 +130,8 @@ export function AdminMedia() {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-        {files.map((file, i) => (
-          <div key={i} className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden group shadow-sm">
+        {files.map((file) => (
+          <div key={file.id} className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden group shadow-sm">
             <div className="aspect-square bg-slate-100 dark:bg-slate-800 relative overflow-hidden">
               <img src={file.url} alt="" className="w-full h-full object-cover" />
               <div className="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center space-x-2">
@@ -91,7 +142,11 @@ export function AdminMedia() {
                 >
                   {copied === file.url ? <Check className="w-5 h-5 text-emerald-400" /> : <Copy className="w-5 h-5" />}
                 </button>
-                <button className="p-2 bg-white/10 hover:bg-red-500/50 rounded-lg text-white transition-all" title="Delete">
+                <button 
+                  onClick={() => handleDelete(file.id)}
+                  className="p-2 bg-white/10 hover:bg-red-500/50 rounded-lg text-white transition-all" 
+                  title="Delete"
+                >
                   <Trash2 className="w-5 h-5" />
                 </button>
               </div>
@@ -104,7 +159,13 @@ export function AdminMedia() {
         ))}
       </div>
 
-      {files.length === 0 && !uploading && (
+      {loading && !uploading && (
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+        </div>
+      )}
+
+      {files.length === 0 && !uploading && !loading && (
         <div className="text-center py-20 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
           <ImageIcon className="w-12 h-12 text-slate-200 dark:text-slate-800 mx-auto mb-4" />
           <p className="text-slate-500 dark:text-slate-400">No media files uploaded yet.</p>

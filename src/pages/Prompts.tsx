@@ -3,6 +3,8 @@ import { Sparkles, TrendingUp, Loader2 } from 'lucide-react';
 import { PromptCard } from '../components/PromptCard';
 import { SearchBar } from '../components/SearchBar';
 import { useSearchParams } from 'react-router-dom';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 
 const CATEGORIES = ['All', 'Image', 'Text', 'Video'];
 
@@ -15,9 +17,16 @@ export function Prompts() {
   useEffect(() => {
     const fetchPrompts = async () => {
       try {
-        const response = await fetch('/api/prompts');
-        const data = await response.json();
-        setPrompts(data);
+        const promptsCollection = collection(db, 'prompts');
+        const promptsSnapshot = await getDocs(promptsCollection).catch(e => {
+          console.warn('Prompts collection inaccessible', e);
+          return { docs: [] };
+        });
+        const promptsList = (promptsSnapshot as any).docs.map((doc: any) => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setPrompts(promptsList);
       } catch (err) {
         console.error('Failed to fetch prompts', err);
       } finally {

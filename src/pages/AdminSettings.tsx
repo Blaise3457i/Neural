@@ -9,6 +9,8 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { collection, getDocs, setDoc, doc } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 
 export function AdminSettings() {
   const [loading, setLoading] = useState(true);
@@ -19,10 +21,16 @@ export function AdminSettings() {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const response = await fetch('/api/admin/settings');
-        const data = await response.json();
+        const settingsCollection = collection(db, 'settings');
+        const settingsSnapshot = await getDocs(settingsCollection).catch(e => {
+          console.warn('Settings collection inaccessible', e);
+          return { docs: [] };
+        });
         const settingsMap: Record<string, string> = {};
-        data.forEach((s: any) => settingsMap[s.key] = s.value);
+        (settingsSnapshot as any).docs.forEach((doc: any) => {
+          const data = doc.data();
+          settingsMap[data.key] = data.value;
+        });
         setSettings(settingsMap);
       } catch (err) {
         console.error('Failed to fetch settings', err);
@@ -41,13 +49,8 @@ export function AdminSettings() {
 
     try {
       for (const [key, value] of Object.entries(settings)) {
-        await fetch('/api/admin/settings', {
-          method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ key, value })
-        });
+        const settingDoc = doc(db, 'settings', key);
+        await setDoc(settingDoc, { key, value }, { merge: true });
       }
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
