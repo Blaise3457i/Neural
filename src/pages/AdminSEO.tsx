@@ -101,6 +101,13 @@ export function AdminSEO() {
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white">SEO Management</h1>
           <p className="text-slate-500 dark:text-slate-400 mt-1">Manage meta titles, descriptions, and keywords for every page.</p>
         </div>
+        <button 
+          onClick={() => setEditingPage({ page_path: '', title: '', description: '', keywords: '', updated_at: '' })}
+          className="flex items-center justify-center space-x-2 bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl font-medium transition-all shadow-lg shadow-purple-500/20 active:scale-95"
+        >
+          <Globe className="w-5 h-5" />
+          <span>Add Page SEO</span>
+        </button>
       </div>
 
       {/* Search */}
@@ -178,6 +185,23 @@ export function AdminSEO() {
             </div>
             
             <form onSubmit={handleSave} className="p-6 space-y-6">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Page Path</label>
+                <input 
+                  required
+                  type="text"
+                  value={editingPage.page_path}
+                  className={cn(
+                    "w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-purple-500/20 outline-none dark:text-white",
+                    seoList.some(s => s.page_path === editingPage.page_path) && "opacity-50 cursor-not-allowed"
+                  )}
+                  placeholder="/tools, /prompts, etc."
+                  disabled={seoList.some(s => s.page_path === editingPage.page_path)}
+                  onChange={(e) => setEditingPage({...editingPage, page_path: e.target.value})}
+                />
+                <p className="text-[10px] text-slate-500 italic">Must start with / and be unique.</p>
+              </div>
+
               <div className="space-y-2">
                 <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Meta Title</label>
                 <input 

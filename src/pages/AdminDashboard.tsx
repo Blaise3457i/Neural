@@ -11,7 +11,8 @@ import {
   ArrowUpRight, 
   ArrowDownRight,
   Loader2,
-  Globe
+  Globe,
+  BookOpen
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { collection, getDocs, getCountFromServer, query, orderBy, limit } from 'firebase/firestore';
@@ -21,6 +22,7 @@ interface Stats {
   tools: number;
   prompts: number;
   blog: number;
+  tutorials: number;
 }
 
 interface Activity {
@@ -39,16 +41,18 @@ export function AdminDashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [toolsCount, promptsCount, blogsCount] = await Promise.all([
+        const [toolsCount, promptsCount, blogsCount, tutorialsCount] = await Promise.all([
           getCountFromServer(collection(db, 'tools')).catch(e => { console.warn('Tools count inaccessible', e); return { data: () => ({ count: 0 }) }; }),
           getCountFromServer(collection(db, 'prompts')).catch(e => { console.warn('Prompts count inaccessible', e); return { data: () => ({ count: 0 }) }; }),
-          getCountFromServer(collection(db, 'blogs')).catch(e => { console.warn('Blogs count inaccessible', e); return { data: () => ({ count: 0 }) }; })
+          getCountFromServer(collection(db, 'blogs')).catch(e => { console.warn('Blogs count inaccessible', e); return { data: () => ({ count: 0 }) }; }),
+          getCountFromServer(collection(db, 'tutorials')).catch(e => { console.warn('Tutorials count inaccessible', e); return { data: () => ({ count: 0 }) }; })
         ]);
         
         setStats({
           tools: (toolsCount as any).data().count,
           prompts: (promptsCount as any).data().count,
-          blog: (blogsCount as any).data().count
+          blog: (blogsCount as any).data().count,
+          tutorials: (tutorialsCount as any).data().count
         });
 
         // Fetch recent activities
@@ -86,8 +90,8 @@ export function AdminDashboard() {
   const STAT_CARDS = [
     { name: 'Total AI Tools', value: stats?.tools || 0, icon: Wrench, color: 'text-blue-600', bg: 'bg-blue-50 dark:bg-blue-900/20', trend: '+12%', up: true },
     { name: 'Active Prompts', value: stats?.prompts || 0, icon: MessageSquare, color: 'text-purple-600', bg: 'bg-purple-50 dark:bg-purple-900/20', trend: '+5%', up: true },
+    { name: 'Tutorials', value: stats?.tutorials || 0, icon: BookOpen, color: 'text-orange-600', bg: 'bg-orange-50 dark:bg-orange-900/20', trend: '+8%', up: true },
     { name: 'Blog Articles', value: stats?.blog || 0, icon: FileText, color: 'text-emerald-600', bg: 'bg-emerald-50 dark:bg-emerald-900/20', trend: '-2%', up: false },
-    { name: 'Total Views', value: '12.4K', icon: Eye, color: 'text-orange-600', bg: 'bg-orange-50 dark:bg-orange-900/20', trend: '+18%', up: true },
   ];
 
   return (
@@ -180,6 +184,16 @@ export function AdminDashboard() {
               </div>
               <p className="text-sm font-bold text-slate-900 dark:text-white">New Prompt</p>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Add a curated prompt</p>
+            </button>
+            <button 
+              onClick={() => navigate('/admin/tutorials')}
+              className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-left group"
+            >
+              <div className="p-2 rounded-lg bg-orange-50 dark:bg-orange-900/20 text-orange-600 mb-3 group-hover:scale-110 transition-transform w-fit">
+                <BookOpen className="w-5 h-5" />
+              </div>
+              <p className="text-sm font-bold text-slate-900 dark:text-white">New Tutorial</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Add a step-by-step guide</p>
             </button>
             <button 
               onClick={() => navigate('/admin/seo')}

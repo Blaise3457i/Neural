@@ -6,6 +6,8 @@ export interface AITool {
   isFree: boolean;
   image: string;
   link: string;
+  published?: boolean;
+  featured?: boolean;
 }
 
 export interface AIPrompt {
@@ -14,6 +16,8 @@ export interface AIPrompt {
   category: 'Text' | 'Image' | 'Video' | 'Audio';
   badge: string;
   outputImage?: string;
+  published?: boolean;
+  featured?: boolean;
 }
 
 export interface Tutorial {
@@ -22,7 +26,10 @@ export interface Tutorial {
   description: string;
   category: 'AI Art' | 'AI Writing' | 'AI Automation' | 'Marketing';
   thumbnail: string;
-  steps: string[];
+  steps?: string[];
+  duration?: string;
+  published?: boolean;
+  featured?: boolean;
 }
 
 export interface BlogPost {
@@ -32,6 +39,8 @@ export interface BlogPost {
   thumbnail: string;
   date: string;
   trending?: boolean;
+  published?: boolean;
+  content?: string;
 }
 
 export interface AIProvider {

@@ -18,6 +18,7 @@ import { AdminDashboard } from './pages/AdminDashboard';
 import { AdminTools } from './pages/AdminTools';
 import { AdminPrompts } from './pages/AdminPrompts';
 import { AdminBlog } from './pages/AdminBlog';
+import { AdminTutorials } from './pages/AdminTutorials';
 import { AdminMedia } from './pages/AdminMedia';
 import { AdminSettings } from './pages/AdminSettings';
 import { AdminSEO } from './pages/AdminSEO';
@@ -71,6 +72,7 @@ function AppContent() {
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="tools" element={<AdminTools />} />
             <Route path="prompts" element={<AdminPrompts />} />
+            <Route path="tutorials" element={<AdminTutorials />} />
             <Route path="blog" element={<AdminBlog />} />
             <Route path="media" element={<AdminMedia />} />
             <Route path="seo" element={<AdminSEO />} />

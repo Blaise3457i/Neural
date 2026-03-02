@@ -32,7 +32,7 @@ export function TutorialCard({ tutorial }: TutorialCardProps) {
           </span>
           <div className="flex items-center text-slate-400 text-[10px] font-bold">
             <Clock className="w-3 h-3 mr-1" />
-            <span>12 MIN</span>
+            <span>{tutorial.duration || '10 MIN'}</span>
           </div>
         </div>
         <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 line-clamp-1">

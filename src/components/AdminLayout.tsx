@@ -11,7 +11,8 @@ import {
   LogOut, 
   ChevronRight,
   BarChart3,
-  Globe
+  Globe,
+  BookOpen
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
@@ -19,6 +20,7 @@ const ADMIN_NAV = [
   { name: 'Dashboard', icon: LayoutDashboard, path: '/admin/dashboard' },
   { name: 'AI Tools', icon: Wrench, path: '/admin/tools' },
   { name: 'Prompts', icon: MessageSquare, path: '/admin/prompts' },
+  { name: 'Tutorials', icon: BookOpen, path: '/admin/tutorials' },
   { name: 'Blog CMS', icon: FileText, path: '/admin/blog' },
   { name: 'Media Manager', icon: ImageIcon, path: '/admin/media' },
   { name: 'SEO Management', icon: Globe, path: '/admin/seo' },

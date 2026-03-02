@@ -61,13 +61,24 @@ export function Home() {
   const toolsByCategory = useMemo(() => {
     return toolCategories.map(cat => ({
       name: cat === 'Text' ? 'Text Generators' : cat === 'Video' ? 'Video Generators' : cat === 'Image' ? 'Image Generators' : cat === 'Audio' ? 'Audio Generators' : cat,
-      tools: tools.filter(tool => tool.category === cat).slice(0, 5)
+      tools: tools
+        .filter(tool => tool.category === cat && tool.published !== false)
+        .sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0))
+        .slice(0, 5)
     }));
   }, [tools]);
 
   const featuredPrompts = useMemo(() => {
-    return prompts.slice(0, 6);
+    return prompts
+      .filter(p => p.featured !== false && p.published !== false)
+      .slice(0, 6);
   }, [prompts]);
+
+  const featuredTutorials = useMemo(() => {
+    return tutorials
+      .filter(t => t.featured !== false && t.published !== false)
+      .slice(0, 2);
+  }, [tutorials]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -268,7 +279,7 @@ export function Home() {
             </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-12">
-            {tutorials.slice(0, 2).map(tutorial => (
+            {featuredTutorials.map(tutorial => (
               <TutorialCard key={tutorial.id} tutorial={tutorial} />
             ))}
           </div>

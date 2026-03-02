@@ -22,6 +22,7 @@ interface Prompt {
   badge: string;
   outputImage: string | null;
   published: boolean;
+  featured: boolean;
 }
 
 export function AdminPrompts() {
@@ -37,7 +38,8 @@ export function AdminPrompts() {
     category: 'Text',
     badge: '',
     outputImage: '',
-    published: true
+    published: true,
+    featured: false
   });
 
   const fetchPrompts = async () => {
@@ -72,7 +74,8 @@ export function AdminPrompts() {
         category: prompt.category,
         badge: prompt.badge,
         outputImage: prompt.outputImage || '',
-        published: prompt.published
+        published: prompt.published,
+        featured: prompt.featured || false
       });
     } else {
       setEditingPrompt(null);
@@ -81,7 +84,8 @@ export function AdminPrompts() {
         category: 'Text',
         badge: '',
         outputImage: '',
-        published: true
+        published: true,
+        featured: false
       });
     }
     setIsModalOpen(true);
@@ -306,6 +310,15 @@ export function AdminPrompts() {
                     className="w-5 h-5 rounded border-slate-300 text-purple-600 focus:ring-purple-500"
                   />
                   <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Published</span>
+                </label>
+                <label className="flex items-center space-x-3 cursor-pointer">
+                  <input 
+                    type="checkbox"
+                    checked={formData.featured}
+                    onChange={(e) => setFormData({...formData, featured: e.target.checked})}
+                    className="w-5 h-5 rounded border-slate-300 text-purple-600 focus:ring-purple-500"
+                  />
+                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Featured (Trending)</span>
                 </label>
               </div>
 
