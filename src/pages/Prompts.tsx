@@ -37,14 +37,16 @@ export function Prompts() {
   }, []);
 
   const filteredPrompts = useMemo(() => {
-    return prompts.filter(prompt => {
-      const q = searchQuery.toLowerCase();
-      const matchesSearch = prompt.text.toLowerCase().includes(q) ||
-                           prompt.category.toLowerCase().includes(q) ||
-                           prompt.badge.toLowerCase().includes(q);
-      const matchesCategory = activeCategory === 'All' || prompt.category === activeCategory;
-      return matchesSearch && matchesCategory;
-    });
+    return prompts
+      .filter(prompt => prompt.published !== false)
+      .filter(prompt => {
+        const q = searchQuery.toLowerCase();
+        const matchesSearch = prompt.text.toLowerCase().includes(q) ||
+                             prompt.category.toLowerCase().includes(q) ||
+                             prompt.badge.toLowerCase().includes(q);
+        const matchesCategory = activeCategory === 'All' || prompt.category === activeCategory;
+        return matchesSearch && matchesCategory;
+      });
   }, [searchQuery, activeCategory, prompts]);
 
   return (

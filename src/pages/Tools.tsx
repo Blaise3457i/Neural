@@ -40,14 +40,16 @@ export function Tools() {
   }, []);
 
   const filteredTools = useMemo(() => {
-    return tools.filter(tool => {
-      const q = searchQuery.toLowerCase();
-      const matchesSearch = tool.name.toLowerCase().includes(q) || 
-                           tool.description.toLowerCase().includes(q) ||
-                           tool.category.toLowerCase().includes(q);
-      const matchesCategory = activeCategory === 'All' || tool.category === activeCategory;
-      return matchesSearch && matchesCategory;
-    });
+    return tools
+      .filter(tool => tool.published !== false)
+      .filter(tool => {
+        const q = searchQuery.toLowerCase();
+        const matchesSearch = tool.name.toLowerCase().includes(q) || 
+                             tool.description.toLowerCase().includes(q) ||
+                             tool.category.toLowerCase().includes(q);
+        const matchesCategory = activeCategory === 'All' || tool.category === activeCategory;
+        return matchesSearch && matchesCategory;
+      });
   }, [searchQuery, activeCategory, tools]);
 
   const filteredProviders = useMemo(() => {

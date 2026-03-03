@@ -16,24 +16,14 @@ import { cn } from '../lib/utils';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 
-interface Tool {
-  id: string;
-  name: string;
-  description: string;
-  category: string;
-  isFree: boolean;
-  image: string;
-  link: string;
-  published: boolean;
-  featured: boolean;
-}
+import { AITool } from '../types';
 
 export function AdminTools() {
-  const [tools, setTools] = useState<Tool[]>([]);
+  const [tools, setTools] = useState<AITool[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingTool, setEditingTool] = useState<Tool | null>(null);
+  const [editingTool, setEditingTool] = useState<AITool | null>(null);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -58,7 +48,7 @@ export function AdminTools() {
       const toolsList = (toolsSnapshot as any).docs.map((doc: any) => ({
         id: doc.id,
         ...doc.data()
-      })) as Tool[];
+      })) as AITool[];
       setTools(toolsList);
     } catch (err) {
       console.error('Failed to fetch tools', err);
@@ -71,7 +61,7 @@ export function AdminTools() {
     fetchTools();
   }, []);
 
-  const handleOpenModal = (tool?: Tool) => {
+  const handleOpenModal = (tool?: AITool) => {
     if (tool) {
       setEditingTool(tool);
       setFormData({
@@ -223,6 +213,11 @@ export function AdminTools() {
                         ) : (
                           <span className="flex items-center text-slate-400 text-xs font-medium">
                             <X className="w-3 h-3 mr-1" /> Draft
+                          </span>
+                        )}
+                        {tool.featured && (
+                          <span className="px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 text-[10px] font-bold">
+                            FEATURED
                           </span>
                         )}
                       </div>

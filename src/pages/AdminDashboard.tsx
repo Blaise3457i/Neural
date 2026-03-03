@@ -12,7 +12,8 @@ import {
   ArrowDownRight,
   Loader2,
   Globe,
-  BookOpen
+  BookOpen,
+  Image as ImageIcon
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { collection, getDocs, getCountFromServer, query, orderBy, limit } from 'firebase/firestore';
@@ -204,6 +205,16 @@ export function AdminDashboard() {
               </div>
               <p className="text-sm font-bold text-slate-900 dark:text-white">SEO Meta</p>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Edit site metadata</p>
+            </button>
+            <button 
+              onClick={() => navigate('/admin/media')}
+              className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-left group"
+            >
+              <div className="p-2 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 mb-3 group-hover:scale-110 transition-transform w-fit">
+                <ImageIcon className="w-5 h-5" />
+              </div>
+              <p className="text-sm font-bold text-slate-900 dark:text-white">My Generations</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Manage your AI assets</p>
             </button>
           </div>
         </div>

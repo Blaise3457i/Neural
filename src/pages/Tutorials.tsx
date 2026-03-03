@@ -35,14 +35,16 @@ export function Tutorials() {
     fetchTutorials();
   }, []);
 
-  const filteredTutorials = tutorials.filter(tut => {
-    const q = searchQuery.toLowerCase();
-    const matchesCategory = activeCategory === 'All' || tut.category === activeCategory;
-    const matchesSearch = tut.title.toLowerCase().includes(q) || 
-                         tut.description.toLowerCase().includes(q) ||
-                         tut.category.toLowerCase().includes(q);
-    return matchesCategory && matchesSearch;
-  });
+  const filteredTutorials = tutorials
+    .filter(tut => tut.published !== false)
+    .filter(tut => {
+      const q = searchQuery.toLowerCase();
+      const matchesCategory = activeCategory === 'All' || tut.category === activeCategory;
+      const matchesSearch = tut.title.toLowerCase().includes(q) || 
+                           tut.description.toLowerCase().includes(q) ||
+                           tut.category.toLowerCase().includes(q);
+      return matchesCategory && matchesSearch;
+    });
 
   return (
     <div className="pt-32 pb-24 min-h-screen">

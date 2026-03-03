@@ -30,7 +30,8 @@ export function Blog() {
     fetchPosts();
   }, []);
 
-  const featuredPost = posts.find(p => p.trending) || posts[0];
+  const publishedPosts = posts.filter(p => p.published !== false);
+  const featuredPost = publishedPosts.find(p => p.trending) || publishedPosts[0];
 
   return (
     <div className="pt-32 pb-24 min-h-screen">
@@ -80,7 +81,7 @@ export function Blog() {
 
             {/* Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {posts.map(post => (
+              {publishedPosts.map(post => (
                 <BlogCard key={post.id} post={post} />
               ))}
             </div>

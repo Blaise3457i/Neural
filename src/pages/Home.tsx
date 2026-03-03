@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowRight, Sparkles, Zap, Shield, Globe, Play, Loader2 } from 'lucide-react';
+import { ArrowRight, Sparkles, Zap, Shield, Globe, Play, Loader2, CheckCircle2 } from 'lucide-react';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { ToolCard } from '../components/ToolCard';
@@ -21,6 +21,8 @@ export function Home() {
   const [tutorials, setTutorials] = useState<any[]>([]);
   const [settings, setSettings] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
+  const [email, setEmail] = useState('');
+  const [subscribed, setSubscribed] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -70,13 +72,15 @@ export function Home() {
 
   const featuredPrompts = useMemo(() => {
     return prompts
-      .filter(p => p.featured !== false && p.published !== false)
+      .filter(p => p.published !== false)
+      .sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0))
       .slice(0, 6);
   }, [prompts]);
 
   const featuredTutorials = useMemo(() => {
     return tutorials
-      .filter(t => t.featured !== false && t.published !== false)
+      .filter(t => t.published !== false)
+      .sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0))
       .slice(0, 2);
   }, [tutorials]);
 
@@ -337,16 +341,41 @@ export function Home() {
         <div className="bg-gradient-to-br from-purple-600 to-blue-600 rounded-[2.5rem] p-12 lg:p-20 shadow-2xl shadow-purple-500/20">
           <h2 className="text-3xl lg:text-5xl font-black text-white mb-6">Stay Ahead of the Curve</h2>
           <p className="text-purple-100 text-lg mb-10 max-w-2xl mx-auto">Join 50,000+ AI enthusiasts and get the latest free tools and prompts delivered to your inbox every week.</p>
-          <form className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4 max-w-lg mx-auto">
-            <input 
-              type="email" 
-              placeholder="Enter your email" 
-              className="w-full bg-white/10 border border-white/20 rounded-2xl px-6 py-4 text-white placeholder:text-purple-200 focus:outline-none focus:ring-2 focus:ring-white/30 backdrop-blur-md"
-            />
-            <button className="w-full sm:w-auto bg-white text-purple-600 px-8 py-4 rounded-2xl font-bold hover:bg-purple-50 transition-all active:scale-95">
-              Subscribe
-            </button>
-          </form>
+          
+          {subscribed ? (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8"
+            >
+              <CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto mb-4" />
+              <h3 className="text-2xl font-bold text-white mb-2">You're on the list!</h3>
+              <p className="text-purple-100">Thank you for subscribing. Check your inbox soon.</p>
+            </motion.div>
+          ) : (
+            <form 
+              onSubmit={(e) => {
+                e.preventDefault();
+                setSubscribed(true);
+              }}
+              className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4 max-w-lg mx-auto"
+            >
+              <input 
+                required
+                type="email" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email" 
+                className="w-full bg-white/10 border border-white/20 rounded-2xl px-6 py-4 text-white placeholder:text-purple-200 focus:outline-none focus:ring-2 focus:ring-white/30 backdrop-blur-md"
+              />
+              <button 
+                type="submit"
+                className="w-full sm:w-auto bg-white text-purple-600 px-8 py-4 rounded-2xl font-bold hover:bg-purple-50 transition-all active:scale-95"
+              >
+                Subscribe
+              </button>
+            </form>
+          )}
           <p className="text-purple-200 text-xs mt-6">No spam, ever. Unsubscribe at any time.</p>
         </div>
       </section>

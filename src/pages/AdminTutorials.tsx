@@ -16,16 +16,7 @@ import { cn } from '../lib/utils';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 
-interface Tutorial {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  duration: string;
-  thumbnail: string;
-  published: boolean;
-  featured: boolean;
-}
+import { Tutorial } from '../types';
 
 export function AdminTutorials() {
   const [tutorials, setTutorials] = useState<Tutorial[]>([]);

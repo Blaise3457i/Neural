@@ -22,7 +22,7 @@ const ADMIN_NAV = [
   { name: 'Prompts', icon: MessageSquare, path: '/admin/prompts' },
   { name: 'Tutorials', icon: BookOpen, path: '/admin/tutorials' },
   { name: 'Blog CMS', icon: FileText, path: '/admin/blog' },
-  { name: 'Media Manager', icon: ImageIcon, path: '/admin/media' },
+  { name: 'My Generations', icon: ImageIcon, path: '/admin/media' },
   { name: 'SEO Management', icon: Globe, path: '/admin/seo' },
   { name: 'Site Settings', icon: Settings, path: '/admin/settings' },
   { name: 'Analytics', icon: BarChart3, path: '/admin/analytics' },

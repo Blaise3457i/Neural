@@ -15,22 +15,14 @@ import { cn } from '../lib/utils';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 
-interface Prompt {
-  id: string;
-  text: string;
-  category: string;
-  badge: string;
-  outputImage: string | null;
-  published: boolean;
-  featured: boolean;
-}
+import { AIPrompt } from '../types';
 
 export function AdminPrompts() {
-  const [prompts, setPrompts] = useState<Prompt[]>([]);
+  const [prompts, setPrompts] = useState<AIPrompt[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingPrompt, setEditingPrompt] = useState<Prompt | null>(null);
+  const [editingPrompt, setEditingPrompt] = useState<AIPrompt | null>(null);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -53,7 +45,7 @@ export function AdminPrompts() {
       const promptsList = (promptsSnapshot as any).docs.map((doc: any) => ({
         id: doc.id,
         ...doc.data()
-      })) as Prompt[];
+      })) as AIPrompt[];
       setPrompts(promptsList);
     } catch (err) {
       console.error('Failed to fetch prompts', err);
@@ -66,7 +58,7 @@ export function AdminPrompts() {
     fetchPrompts();
   }, []);
 
-  const handleOpenModal = (prompt?: Prompt) => {
+  const handleOpenModal = (prompt?: AIPrompt) => {
     if (prompt) {
       setEditingPrompt(prompt);
       setFormData({
@@ -213,6 +205,11 @@ export function AdminPrompts() {
                         ) : (
                           <span className="flex items-center text-slate-400 text-xs font-medium">
                             <X className="w-3 h-3 mr-1" /> Draft
+                          </span>
+                        )}
+                        {prompt.featured && (
+                          <span className="px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 text-[10px] font-bold">
+                            FEATURED
                           </span>
                         )}
                       </div>

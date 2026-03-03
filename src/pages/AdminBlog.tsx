@@ -16,16 +16,7 @@ import { cn } from '../lib/utils';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 
-interface BlogPost {
-  id: string;
-  title: string;
-  description: string;
-  thumbnail: string;
-  date: string;
-  content: string | null;
-  trending: boolean;
-  published: boolean;
-}
+import { BlogPost } from '../types';
 
 export function AdminBlog() {
   const [posts, setPosts] = useState<BlogPost[]>([]);

@@ -47,18 +47,22 @@ export function Search() {
     if (!query) return { tools: [], prompts: [], tutorials: [], providers: [] };
 
     const q = query.toLowerCase();
+    const publishedTools = data.tools.filter(t => t.published !== false);
+    const publishedPrompts = data.prompts.filter(p => p.published !== false);
+    const publishedTutorials = data.tutorials.filter(t => t.published !== false);
+
     return {
-      tools: data.tools.filter(t => 
+      tools: publishedTools.filter(t => 
         t.name.toLowerCase().includes(q) || 
         t.description.toLowerCase().includes(q) ||
         t.category.toLowerCase().includes(q)
       ),
-      prompts: data.prompts.filter(p => 
+      prompts: publishedPrompts.filter(p => 
         p.text.toLowerCase().includes(q) ||
         p.category.toLowerCase().includes(q) ||
         p.badge.toLowerCase().includes(q)
       ),
-      tutorials: data.tutorials.filter(t => 
+      tutorials: publishedTutorials.filter(t => 
         t.title.toLowerCase().includes(q) || 
         t.description.toLowerCase().includes(q) ||
         t.category.toLowerCase().includes(q)

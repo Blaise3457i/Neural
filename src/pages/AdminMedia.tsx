@@ -104,8 +104,8 @@ export function AdminMedia() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Media Manager</h1>
-        <p className="text-slate-500 dark:text-slate-400 mt-1">Upload and manage images and assets for your content.</p>
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">My Generations & Assets</h1>
+        <p className="text-slate-500 dark:text-slate-400 mt-1">Upload and manage your AI-generated content and site assets.</p>
       </div>
 
       <div 
