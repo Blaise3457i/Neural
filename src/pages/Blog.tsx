@@ -3,8 +3,10 @@ import { BlogCard } from '../components/BlogCard';
 import { Loader2 } from 'lucide-react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../lib/firebase';
+import { useNavigate } from 'react-router-dom';
 
 export function Blog() {
+  const navigate = useNavigate();
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -52,7 +54,10 @@ export function Blog() {
             {/* Featured Post */}
             {featuredPost && (
               <div className="mb-20">
-                <div className="relative aspect-[21/9] rounded-[2.5rem] overflow-hidden group cursor-pointer">
+                <div 
+                  onClick={() => navigate(`/blog/${featuredPost.id}`)}
+                  className="relative aspect-[21/9] rounded-[2.5rem] overflow-hidden group cursor-pointer"
+                >
                   <img 
                     src={featuredPost.thumbnail || "/placeholder.jpg"} 
                     alt={featuredPost.title} 

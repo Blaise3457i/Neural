@@ -21,6 +21,8 @@ import { BlogPost } from '../types';
 export function AdminBlog() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
@@ -61,6 +63,7 @@ export function AdminBlog() {
   }, []);
 
   const handleOpenModal = (post?: BlogPost) => {
+    setError(null);
     if (post) {
       setEditingPost(post);
       setFormData({
@@ -89,19 +92,32 @@ export function AdminBlog() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSaving(true);
+    setError(null);
 
     try {
+      const trimmedData = {
+        ...formData,
+        title: formData.title.trim(),
+        description: formData.description.trim(),
+        thumbnail: formData.thumbnail.trim(),
+        content: formData.content.trim()
+      };
+
       if (editingPost) {
         const postDoc = doc(db, 'blogs', editingPost.id);
-        await updateDoc(postDoc, formData);
+        await updateDoc(postDoc, trimmedData);
       } else {
         const blogsCollection = collection(db, 'blogs');
-        await addDoc(blogsCollection, formData);
+        await addDoc(blogsCollection, trimmedData);
       }
       setIsModalOpen(false);
       fetchPosts();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to save post', err);
+      setError(err.message || 'Failed to save article. Please try again.');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -247,6 +263,12 @@ export function AdminBlog() {
             </div>
             
             <form onSubmit={handleSubmit} className="p-6 space-y-6 overflow-y-auto flex-1">
+              {error && (
+                <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 rounded-xl text-red-600 dark:text-red-400 text-sm flex items-center">
+                  <X className="w-4 h-4 mr-2" />
+                  {error}
+                </div>
+              )}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="col-span-full space-y-2">
                   <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Article Title</label>
@@ -337,8 +359,10 @@ export function AdminBlog() {
                 </button>
                 <button 
                   type="submit"
-                  className="px-8 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-purple-500/20 active:scale-95"
+                  disabled={saving}
+                  className="px-8 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-purple-500/20 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
                 >
+                  {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                   {editingPost ? 'Update Article' : 'Publish Article'}
                 </button>
               </div>

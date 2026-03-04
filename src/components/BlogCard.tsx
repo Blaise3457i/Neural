@@ -1,5 +1,6 @@
 import { motion } from 'motion/react';
 import { ArrowRight, Calendar } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { BlogPost } from '../types';
 
 interface BlogCardProps {
@@ -7,10 +8,13 @@ interface BlogCardProps {
 }
 
 export function BlogCard({ post }: BlogCardProps) {
+  const navigate = useNavigate();
+
   return (
     <motion.div
       whileHover={{ y: -5 }}
-      className="group bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300"
+      onClick={() => navigate(`/blog/${post.id}`)}
+      className="group bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer"
     >
       <div className="aspect-[16/10] overflow-hidden relative">
         <img 

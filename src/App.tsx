@@ -8,6 +8,7 @@ import { Tools } from './pages/Tools';
 import { Prompts } from './pages/Prompts';
 import { Tutorials } from './pages/Tutorials';
 import { Blog } from './pages/Blog';
+import { BlogPost } from './pages/BlogPost';
 import { Search } from './pages/Search';
 import { About } from './pages/About';
 import { Privacy } from './pages/Privacy';
@@ -63,6 +64,7 @@ function AppContent() {
           <Route path="/prompts" element={<Prompts />} />
           <Route path="/tutorials" element={<Tutorials />} />
           <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:id" element={<BlogPost />} />
           <Route path="/search" element={<Search />} />
           <Route path="/about" element={<About />} />
           <Route path="/privacy" element={<Privacy />} />
