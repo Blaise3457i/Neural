@@ -24,6 +24,8 @@ import { AdminSettings } from './pages/AdminSettings';
 import { AdminSEO } from './pages/AdminSEO';
 import { SiteConfig } from './components/SiteConfig';
 import { AuthProvider } from './hooks/useAuth';
+import { usePageTracking } from './hooks/usePageTracking';
+import { AdminAnalytics } from './pages/AdminAnalytics';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -46,6 +48,7 @@ export default function App() {
 function AppContent() {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
+  usePageTracking();
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950 transition-colors duration-300">
@@ -77,7 +80,7 @@ function AppContent() {
             <Route path="media" element={<AdminMedia />} />
             <Route path="seo" element={<AdminSEO />} />
             <Route path="settings" element={<AdminSettings />} />
-            <Route path="analytics" element={<div className="p-8 text-center text-slate-500">Analytics Coming Soon</div>} />
+            <Route path="analytics" element={<AdminAnalytics />} />
           </Route>
         </Routes>
       </main>
