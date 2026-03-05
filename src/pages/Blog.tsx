@@ -1,14 +1,19 @@
 import { useState, useEffect } from 'react';
 import { BlogCard } from '../components/BlogCard';
+import { BlogSkeleton } from '../components/BlogSkeleton';
 import { Loader2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useNavigate } from 'react-router-dom';
 
 export function Blog() {
   const navigate = useNavigate();
-  const [posts, setPosts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [posts, setPosts] = useState<any[]>(() => {
+    const cached = localStorage.getItem('neural_blogs_cache');
+    return cached ? JSON.parse(cached) : [];
+  });
+  const [loading, setLoading] = useState(posts.length === 0);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -23,6 +28,7 @@ export function Blog() {
           ...doc.data()
         }));
         setPosts(blogsList);
+        localStorage.setItem('neural_blogs_cache', JSON.stringify(blogsList));
       } catch (err) {
         console.error('Failed to fetch blog posts', err);
       } finally {
@@ -45,53 +51,78 @@ export function Blog() {
           </p>
         </div>
 
-        {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-10 h-10 animate-spin text-purple-600" />
-          </div>
-        ) : (
-          <>
-            {/* Featured Post */}
-            {featuredPost && (
-              <div className="mb-20">
-                <div 
-                  onClick={() => navigate(`/blog/${featuredPost.id}`)}
-                  className="relative aspect-[21/9] rounded-[2.5rem] overflow-hidden group cursor-pointer"
-                >
-                  <img 
-                    src={featuredPost.thumbnail || "/placeholder.jpg"} 
-                    alt={featuredPost.title} 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    referrerPolicy="no-referrer"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent flex flex-col justify-end p-8 lg:p-16">
-                    <div className="max-w-3xl">
-                      <span className="bg-purple-600 text-white text-[10px] font-bold px-3 py-1 rounded-full mb-6 inline-block">
-                        FEATURED ARTICLE
-                      </span>
-                      <h2 className="text-3xl lg:text-5xl font-black text-white mb-6 leading-tight">
-                        {featuredPost.title}
-                      </h2>
-                      <p className="text-slate-300 text-lg mb-8 line-clamp-2">
-                        {featuredPost.description}
-                      </p>
-                      <button className="bg-white text-slate-900 px-8 py-4 rounded-2xl font-bold hover:bg-slate-100 transition-all active:scale-95">
-                        Read Article
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Grid */}
+        <div className="min-h-[400px]">
+          {loading && posts.length === 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {publishedPosts.map(post => (
-                <BlogCard key={post.id} post={post} />
+              {Array.from({ length: 6 }).map((_, i) => (
+                <BlogSkeleton key={i} />
               ))}
             </div>
-          </>
-        )}
+          ) : (
+            <>
+              {/* Featured Post */}
+              {featuredPost && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-20"
+                >
+                  <div 
+                    onClick={() => navigate(`/blog/${featuredPost.id}`)}
+                    className="relative aspect-[21/9] rounded-[2.5rem] overflow-hidden group cursor-pointer"
+                  >
+                    <img 
+                      src={featuredPost.thumbnail || "/placeholder.jpg"} 
+                      alt={featuredPost.title} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                      referrerPolicy="no-referrer"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent flex flex-col justify-end p-8 lg:p-16">
+                      <div className="max-w-3xl">
+                        <span className="bg-purple-600 text-white text-[10px] font-bold px-3 py-1 rounded-full mb-6 inline-block">
+                          FEATURED ARTICLE
+                        </span>
+                        <h2 className="text-3xl lg:text-5xl font-black text-white mb-6 leading-tight">
+                          {featuredPost.title}
+                        </h2>
+                        <p className="text-slate-300 text-lg mb-8 line-clamp-2">
+                          {featuredPost.description}
+                        </p>
+                        <button className="bg-white text-slate-900 px-8 py-4 rounded-2xl font-bold hover:bg-slate-100 transition-all active:scale-95">
+                          Read Article
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Grid */}
+              <motion.div 
+                layout
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
+              >
+                <AnimatePresence mode="popLayout">
+                  {publishedPosts.map((post, index) => (
+                    <motion.div
+                      key={post.id}
+                      layout
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{ 
+                        duration: 0.3, 
+                        delay: Math.min(index * 0.05, 0.5) 
+                      }}
+                    >
+                      <BlogCard post={post} />
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </motion.div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

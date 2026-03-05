@@ -1,6 +1,8 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Search, Filter, SlidersHorizontal, ShieldCheck, Loader2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { ToolCard } from '../components/ToolCard';
+import { ToolSkeleton } from '../components/ToolSkeleton';
 import { SearchBar } from '../components/SearchBar';
 import { ProviderCard } from '../components/ProviderCard';
 import { PROVIDERS } from '../constants/providers';
@@ -13,8 +15,12 @@ const CATEGORIES = ['All', 'Image', 'Video', 'Audio', 'Text', 'Productivity', 'M
 export function Tools() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
-  const [tools, setTools] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [tools, setTools] = useState<any[]>(() => {
+    // Try to load from cache immediately
+    const cached = localStorage.getItem('neural_tools_cache');
+    return cached ? JSON.parse(cached) : [];
+  });
+  const [loading, setLoading] = useState(tools.length === 0);
   const activeCategory = searchParams.get('cat') || 'All';
 
   useEffect(() => {
@@ -29,7 +35,10 @@ export function Tools() {
           id: doc.id,
           ...doc.data()
         }));
+        
+        // Update state and cache
         setTools(toolsList);
+        localStorage.setItem('neural_tools_cache', JSON.stringify(toolsList));
       } catch (err) {
         console.error('Failed to fetch tools', err);
       } finally {
@@ -103,25 +112,50 @@ export function Tools() {
         </div>
 
         {/* Grid */}
-        {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-10 h-10 animate-spin text-purple-600" />
-          </div>
-        ) : filteredTools.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {filteredTools.map(tool => (
-              <ToolCard key={tool.id} tool={tool} />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-20">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-slate-100 dark:bg-slate-800 mb-6">
-              <Search className="w-8 h-8 text-slate-400" />
+        <div className="min-h-[400px]">
+          {loading && tools.length === 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <ToolSkeleton key={i} />
+              ))}
             </div>
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">No tools found</h3>
-            <p className="text-slate-500 dark:text-slate-400">Try adjusting your search or filters.</p>
-          </div>
-        )}
+          ) : filteredTools.length > 0 ? (
+            <motion.div 
+              layout
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
+            >
+              <AnimatePresence mode="popLayout">
+                {filteredTools.map((tool, index) => (
+                  <motion.div
+                    key={tool.id}
+                    layout
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ 
+                      duration: 0.3, 
+                      delay: Math.min(index * 0.05, 0.5) 
+                    }}
+                  >
+                    <ToolCard tool={tool} />
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </motion.div>
+          ) : (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-20"
+            >
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-slate-100 dark:bg-slate-800 mb-6">
+                <Search className="w-8 h-8 text-slate-400" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">No tools found</h3>
+              <p className="text-slate-500 dark:text-slate-400">Try adjusting your search or filters.</p>
+            </motion.div>
+          )}
+        </div>
 
         {/* Pagination Placeholder */}
         <div className="mt-20 flex justify-center mb-24">

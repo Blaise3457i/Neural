@@ -3,9 +3,12 @@ import { ArrowRight, Sparkles, Zap, Shield, Globe, Play, Loader2, CheckCircle2 }
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { ToolCard } from '../components/ToolCard';
+import { ToolSkeleton } from '../components/ToolSkeleton';
 import { SearchBar } from '../components/SearchBar';
 import { PromptCard } from '../components/PromptCard';
+import { PromptSkeleton } from '../components/PromptSkeleton';
 import { TutorialCard } from '../components/TutorialCard';
+import { TutorialSkeleton } from '../components/TutorialSkeleton';
 import { collection, getDocs, limit, query } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 
@@ -16,11 +19,20 @@ const HERO_VIDEOS = [
 
 export function Home() {
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
-  const [tools, setTools] = useState<any[]>([]);
-  const [prompts, setPrompts] = useState<any[]>([]);
-  const [tutorials, setTutorials] = useState<any[]>([]);
+  const [tools, setTools] = useState<any[]>(() => {
+    const cached = localStorage.getItem('neural_tools_cache');
+    return cached ? JSON.parse(cached) : [];
+  });
+  const [prompts, setPrompts] = useState<any[]>(() => {
+    const cached = localStorage.getItem('neural_prompts_cache');
+    return cached ? JSON.parse(cached) : [];
+  });
+  const [tutorials, setTutorials] = useState<any[]>(() => {
+    const cached = localStorage.getItem('neural_tutorials_cache');
+    return cached ? JSON.parse(cached) : [];
+  });
   const [settings, setSettings] = useState<Record<string, string>>({});
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(tools.length === 0);
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
 
@@ -33,9 +45,18 @@ export function Home() {
           getDocs(collection(db, 'tutorials')).catch(e => { console.warn('Tutorials collection inaccessible', e); return { docs: [] }; })
         ]);
         
-        setTools((toolsSnap as any).docs.map((doc: any) => ({ id: doc.id, ...doc.data() })));
-        setPrompts((promptsSnap as any).docs.map((doc: any) => ({ id: doc.id, ...doc.data() })));
-        setTutorials((tutorialsSnap as any).docs.map((doc: any) => ({ id: doc.id, ...doc.data() })));
+        const toolsList = (toolsSnap as any).docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
+        const promptsList = (promptsSnap as any).docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
+        const tutorialsList = (tutorialsSnap as any).docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
+
+        setTools(toolsList);
+        setPrompts(promptsList);
+        setTutorials(tutorialsList);
+
+        // Update caches
+        localStorage.setItem('neural_tools_cache', JSON.stringify(toolsList));
+        localStorage.setItem('neural_prompts_cache', JSON.stringify(promptsList));
+        localStorage.setItem('neural_tutorials_cache', JSON.stringify(tutorialsList));
 
         try {
           const settingsSnap = await getDocs(collection(db, 'settings'));
@@ -239,9 +260,15 @@ export function Home() {
                   </Link>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-                  {category.tools.map(tool => (
-                    <ToolCard key={tool.id} tool={tool} />
-                  ))}
+                  {loading && category.tools.length === 0 ? (
+                    Array.from({ length: 5 }).map((_, i) => (
+                      <ToolSkeleton key={i} />
+                    ))
+                  ) : (
+                    category.tools.map(tool => (
+                      <ToolCard key={tool.id} tool={tool} />
+                    ))
+                  )}
                 </div>
               </div>
             ))}
@@ -262,9 +289,15 @@ export function Home() {
             </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredPrompts.map(prompt => (
-              <PromptCard key={prompt.id} prompt={prompt} />
-            ))}
+            {loading && featuredPrompts.length === 0 ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <PromptSkeleton key={i} />
+              ))
+            ) : (
+              featuredPrompts.map(prompt => (
+                <PromptCard key={prompt.id} prompt={prompt} />
+              ))
+            )}
           </div>
         </div>
       </section>
@@ -283,9 +316,15 @@ export function Home() {
             </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-12">
-            {featuredTutorials.map(tutorial => (
-              <TutorialCard key={tutorial.id} tutorial={tutorial} />
-            ))}
+            {loading && featuredTutorials.length === 0 ? (
+              Array.from({ length: 2 }).map((_, i) => (
+                <TutorialSkeleton key={i} />
+              ))
+            ) : (
+              featuredTutorials.map(tutorial => (
+                <TutorialCard key={tutorial.id} tutorial={tutorial} />
+              ))
+            )}
           </div>
         </div>
       </section>

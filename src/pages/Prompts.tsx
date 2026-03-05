@@ -1,6 +1,8 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Sparkles, TrendingUp, Loader2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { PromptCard } from '../components/PromptCard';
+import { PromptSkeleton } from '../components/PromptSkeleton';
 import { SearchBar } from '../components/SearchBar';
 import { useSearchParams } from 'react-router-dom';
 import { collection, getDocs } from 'firebase/firestore';
@@ -10,8 +12,11 @@ const CATEGORIES = ['All', 'Image', 'Text', 'Video'];
 
 export function Prompts() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [prompts, setPrompts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [prompts, setPrompts] = useState<any[]>(() => {
+    const cached = localStorage.getItem('neural_prompts_cache');
+    return cached ? JSON.parse(cached) : [];
+  });
+  const [loading, setLoading] = useState(prompts.length === 0);
   const [activeCategory, setActiveCategory] = useState('All');
 
   useEffect(() => {
@@ -27,6 +32,7 @@ export function Prompts() {
           ...doc.data()
         }));
         setPrompts(promptsList);
+        localStorage.setItem('neural_prompts_cache', JSON.stringify(promptsList));
       } catch (err) {
         console.error('Failed to fetch prompts', err);
       } finally {
@@ -101,25 +107,50 @@ export function Prompts() {
         </div>
 
         {/* Grid */}
-        {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-10 h-10 animate-spin text-purple-600" />
-          </div>
-        ) : filteredPrompts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredPrompts.map(prompt => (
-              <PromptCard key={prompt.id} prompt={prompt} />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-20">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-slate-100 dark:bg-slate-800 mb-6">
-              <Sparkles className="w-8 h-8 text-slate-400" />
+        <div className="min-h-[400px]">
+          {loading && prompts.length === 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <PromptSkeleton key={i} />
+              ))}
             </div>
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">No prompts found</h3>
-            <p className="text-slate-500 dark:text-slate-400">Try adjusting your search or filters.</p>
-          </div>
-        )}
+          ) : filteredPrompts.length > 0 ? (
+            <motion.div 
+              layout
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
+            >
+              <AnimatePresence mode="popLayout">
+                {filteredPrompts.map((prompt, index) => (
+                  <motion.div
+                    key={prompt.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ 
+                      duration: 0.3, 
+                      delay: Math.min(index * 0.05, 0.5) 
+                    }}
+                  >
+                    <PromptCard prompt={prompt} />
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </motion.div>
+          ) : (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-20"
+            >
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-slate-100 dark:bg-slate-800 mb-6">
+                <Sparkles className="w-8 h-8 text-slate-400" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">No prompts found</h3>
+              <p className="text-slate-500 dark:text-slate-400">Try adjusting your search or filters.</p>
+            </motion.div>
+          )}
+        </div>
       </div>
     </div>
   );

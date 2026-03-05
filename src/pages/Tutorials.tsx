@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { BookOpen, Loader2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { TutorialCard } from '../components/TutorialCard';
+import { TutorialSkeleton } from '../components/TutorialSkeleton';
 import { SearchBar } from '../components/SearchBar';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../lib/firebase';
@@ -10,8 +12,11 @@ const CATEGORIES = ['All', 'AI Art', 'AI Writing', 'AI Automation', 'Marketing']
 export function Tutorials() {
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
-  const [tutorials, setTutorials] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [tutorials, setTutorials] = useState<any[]>(() => {
+    const cached = localStorage.getItem('neural_tutorials_cache');
+    return cached ? JSON.parse(cached) : [];
+  });
+  const [loading, setLoading] = useState(tutorials.length === 0);
 
   useEffect(() => {
     const fetchTutorials = async () => {
@@ -26,6 +31,7 @@ export function Tutorials() {
           ...doc.data()
         }));
         setTutorials(tutorialsList);
+        localStorage.setItem('neural_tutorials_cache', JSON.stringify(tutorialsList));
       } catch (err) {
         console.error('Failed to fetch tutorials', err);
       } finally {
@@ -80,25 +86,50 @@ export function Tutorials() {
         </div>
 
         {/* Grid */}
-        {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-10 h-10 animate-spin text-purple-600" />
-          </div>
-        ) : filteredTutorials.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-12">
-            {filteredTutorials.map(tutorial => (
-              <TutorialCard key={tutorial.id} tutorial={tutorial} />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-20">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-slate-100 dark:bg-slate-800 mb-6">
-              <BookOpen className="w-8 h-8 text-slate-400" />
+        <div className="min-h-[400px]">
+          {loading && tutorials.length === 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-12">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <TutorialSkeleton key={i} />
+              ))}
             </div>
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">No tutorials found</h3>
-            <p className="text-slate-500 dark:text-slate-400">Try adjusting your filters or search for something else.</p>
-          </div>
-        )}
+          ) : filteredTutorials.length > 0 ? (
+            <motion.div 
+              layout
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-12"
+            >
+              <AnimatePresence mode="popLayout">
+                {filteredTutorials.map((tutorial, index) => (
+                  <motion.div
+                    key={tutorial.id}
+                    layout
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ 
+                      duration: 0.3, 
+                      delay: Math.min(index * 0.05, 0.5) 
+                    }}
+                  >
+                    <TutorialCard tutorial={tutorial} />
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </motion.div>
+          ) : (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-20"
+            >
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-slate-100 dark:bg-slate-800 mb-6">
+                <BookOpen className="w-8 h-8 text-slate-400" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">No tutorials found</h3>
+              <p className="text-slate-500 dark:text-slate-400">Try adjusting your filters or search for something else.</p>
+            </motion.div>
+          )}
+        </div>
 
         <div className="mt-20 text-center">
           <button className="bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 px-8 py-4 rounded-2xl font-bold hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95">
