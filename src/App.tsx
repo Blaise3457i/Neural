@@ -5,6 +5,7 @@ import { Footer } from './components/Footer';
 import { BackToTop } from './components/BackToTop';
 import { Home } from './pages/Home';
 import { Tools } from './pages/Tools';
+import { ToolDetails } from './pages/ToolDetails';
 import { Prompts } from './pages/Prompts';
 import { Tutorials } from './pages/Tutorials';
 import { Blog } from './pages/Blog';
@@ -64,6 +65,7 @@ function AppContent() {
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/tools" element={<Tools />} />
+          <Route path="/tools/:id" element={<ToolDetails />} />
           <Route path="/prompts" element={<Prompts />} />
           <Route path="/tutorials" element={<Tutorials />} />
           <Route path="/blog" element={<Blog />} />
