@@ -16,5 +16,8 @@ export const auth = getAuth(app);
 
 // Use initializeFirestore with settings optimized for restricted network environments
 export const db = initializeFirestore(app, {
+  host: "firestore.googleapis.com",
+  ssl: true,
   experimentalForceLongPolling: true,
+  useFetchStreams: false,
 } as any);
