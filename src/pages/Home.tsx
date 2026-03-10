@@ -141,17 +141,34 @@ export function Home() {
                 muted
                 loop
                 playsInline
+                preload="auto"
+                disablePictureInPicture
+                disableRemotePlayback
                 className="w-full h-full object-cover"
                 src={heroVideos[currentVideoIndex]}
-                onLoadedMetadata={(e) => e.currentTarget.play()}
-                onCanPlayThrough={(e) => e.currentTarget.play()}
+                onLoadedMetadata={(e) => {
+                  const playPromise = e.currentTarget.play();
+                  if (playPromise !== undefined) {
+                    playPromise.catch(() => {
+                      // Autoplay was prevented or interrupted by browser power saving
+                    });
+                  }
+                }}
+                onCanPlayThrough={(e) => {
+                  const playPromise = e.currentTarget.play();
+                  if (playPromise !== undefined) {
+                    playPromise.catch(() => {
+                      // Autoplay was prevented or interrupted by browser power saving
+                    });
+                  }
+                }}
               />
             </motion.div>
           </AnimatePresence>
           
           {/* Dark Transparent Overlay */}
-          <div className="absolute inset-0 z-10 bg-black/70" />
-          <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/60 via-transparent to-black/80" />
+          <div className="absolute inset-0 z-10 bg-black/40" />
+          <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/30 via-transparent to-black/50" />
         </div>
 
         <div className="relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">

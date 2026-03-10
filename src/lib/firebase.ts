@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { initializeFirestore } from "firebase/firestore";
+import { initializeFirestore, memoryLocalCache } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: (import.meta as any).env.VITE_FIREBASE_API_KEY || "AIzaSyBTht3DnfDVkOOhG88JOYY_SMWSN37jOxg",
@@ -16,8 +16,9 @@ export const auth = getAuth(app);
 
 // Use initializeFirestore with settings optimized for restricted network environments
 export const db = initializeFirestore(app, {
-  host: "firestore.googleapis.com",
-  ssl: true,
+  localCache: memoryLocalCache(),
   experimentalForceLongPolling: true,
   useFetchStreams: false,
+  host: "firestore.googleapis.com",
+  ssl: true,
 } as any);
