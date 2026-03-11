@@ -19,9 +19,10 @@ export function BlogCard({ post }: BlogCardProps) {
       <div className="aspect-[16/10] overflow-hidden relative">
         <img 
           src={post.thumbnail || "/placeholder.jpg"} 
-          alt={post.title}
+          alt={post.thumbnailAlt || post.title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           referrerPolicy="no-referrer"
+          loading="lazy"
         />
         {post.trending && (
           <div className="absolute top-4 left-4">

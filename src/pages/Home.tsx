@@ -11,6 +11,7 @@ import { TutorialCard } from '../components/TutorialCard';
 import { TutorialSkeleton } from '../components/TutorialSkeleton';
 import { collection, getDocs, limit, query } from 'firebase/firestore';
 import { db } from '../lib/firebase';
+import { SEO } from '../components/SEO';
 
 const HERO_VIDEOS = [
   'https://cdn.pixabay.com/video/2023/10/20/185834-876356710_large.mp4',
@@ -35,6 +36,20 @@ export function Home() {
   const [loading, setLoading] = useState(tools.length === 0);
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
+
+  // Organization Structured Data
+  const organizationData = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Neural",
+    "url": window.location.origin,
+    "logo": `${window.location.origin}/logo.png`,
+    "description": "The #1 Hub for Free AI Resources, Tools, and Prompts.",
+    "sameAs": [
+      "https://twitter.com/neural",
+      "https://facebook.com/neural"
+    ]
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -123,6 +138,11 @@ export function Home() {
 
   return (
     <div className="overflow-x-hidden bg-white dark:bg-slate-950">
+      <SEO 
+        pageId="homepage" 
+        structuredData={organizationData}
+      />
+      
       {/* Hero Section */}
       <section className="relative min-h-screen w-full overflow-hidden flex items-center justify-center py-24 sm:py-32">
         {/* Video Background Slider */}

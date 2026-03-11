@@ -6,6 +6,7 @@ import { TutorialSkeleton } from '../components/TutorialSkeleton';
 import { SearchBar } from '../components/SearchBar';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../lib/firebase';
+import { SEO } from '../components/SEO';
 
 const CATEGORIES = ['All', 'AI Art', 'AI Writing', 'AI Automation', 'Marketing'];
 
@@ -54,6 +55,7 @@ export function Tutorials() {
 
   return (
     <div className="pt-32 pb-24 min-h-screen">
+      <SEO pageId="tutorials" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h1 className="text-4xl lg:text-6xl font-black text-slate-900 dark:text-white mb-6">AI Tutorials</h1>

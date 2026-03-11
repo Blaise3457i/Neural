@@ -9,6 +9,7 @@ import { PROVIDERS } from '../constants/providers';
 import { useSearchParams } from 'react-router-dom';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../lib/firebase';
+import { SEO } from '../components/SEO';
 
 const CATEGORIES = ['All', 'Image', 'Video', 'Audio', 'Text', 'Productivity', 'Misc'];
 
@@ -73,6 +74,7 @@ export function Tools() {
 
   return (
     <div className="pt-32 pb-24 min-h-screen">
+      <SEO pageId="tools" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h1 className="text-4xl lg:text-6xl font-black text-slate-900 dark:text-white mb-6">AI Tools Directory</h1>

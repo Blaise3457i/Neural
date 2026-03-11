@@ -26,7 +26,7 @@ export function ToolCard({ tool }: ToolCardProps) {
           {!imageError && tool.image ? (
             <img 
               src={tool.image} 
-              alt={tool.name}
+              alt={tool.imageAlt || tool.name}
               className="max-w-full max-h-full object-contain group-hover:scale-110 transition-transform duration-500"
               onError={handleImageError}
               loading="lazy"

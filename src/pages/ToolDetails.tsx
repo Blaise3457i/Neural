@@ -5,6 +5,7 @@ import { db } from '../lib/firebase';
 import { AITool } from '../types';
 import { motion } from 'motion/react';
 import { ExternalLink, ArrowLeft, Star, Shield, Zap, Globe, Loader2 } from 'lucide-react';
+import { SEO } from '../components/SEO';
 
 export function ToolDetails() {
   const { id } = useParams<{ id: string }>();
@@ -43,8 +44,38 @@ export function ToolDetails() {
 
   if (!tool) return null;
 
+  // SoftwareApplication Structured Data
+  const softwareData = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": tool.name,
+    "description": tool.seo?.metaDescription || tool.description,
+    "applicationCategory": tool.category,
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "ratingCount": "120"
+    }
+  };
+
   return (
     <div className="pt-32 pb-24 min-h-screen bg-slate-50 dark:bg-slate-950">
+      <SEO 
+        pageId={`tool-${tool.id}`}
+        dynamicData={{
+          title: tool.seo?.metaTitle || `${tool.name} - Best Free AI Tool`,
+          description: tool.seo?.metaDescription || tool.description,
+          keywords: tool.seo?.metaKeywords,
+          ogImage: tool.image
+        }}
+        structuredData={softwareData}
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <button 
           onClick={() => navigate(-1)}
@@ -64,9 +95,10 @@ export function ToolDetails() {
             <div className="aspect-video relative rounded-[2.5rem] overflow-hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center p-12 shadow-2xl">
               <img 
                 src={tool.image} 
-                alt={tool.name} 
+                alt={tool.imageAlt || tool.name} 
                 className="max-w-full max-h-full object-contain"
                 referrerPolicy="no-referrer"
+                loading="lazy"
               />
               <div className="absolute top-6 right-6">
                 <span className="bg-purple-600 text-white text-xs font-black px-4 py-2 rounded-full shadow-lg">

@@ -32,10 +32,16 @@ export function AdminBlog() {
     title: '',
     description: '',
     thumbnail: '',
+    thumbnailAlt: '',
     date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
     content: '',
     trending: false,
-    published: true
+    published: true,
+    seo: {
+      metaTitle: '',
+      metaDescription: '',
+      metaKeywords: ''
+    }
   });
 
   const fetchPosts = async () => {
@@ -70,10 +76,16 @@ export function AdminBlog() {
         title: post.title,
         description: post.description,
         thumbnail: post.thumbnail,
+        thumbnailAlt: post.thumbnailAlt || '',
         date: post.date,
         content: post.content || '',
-        trending: post.trending,
-        published: post.published
+        trending: post.trending || false,
+        published: post.published || false,
+        seo: {
+          metaTitle: post.seo?.metaTitle || '',
+          metaDescription: post.seo?.metaDescription || '',
+          metaKeywords: post.seo?.metaKeywords || ''
+        }
       });
     } else {
       setEditingPost(null);
@@ -81,10 +93,16 @@ export function AdminBlog() {
         title: '',
         description: '',
         thumbnail: '',
+        thumbnailAlt: '',
         date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
         content: '',
         trending: false,
-        published: true
+        published: true,
+        seo: {
+          metaTitle: '',
+          metaDescription: '',
+          metaKeywords: ''
+        }
       });
     }
     setIsModalOpen(true);
@@ -304,6 +322,16 @@ export function AdminBlog() {
                   />
                 </div>
                 <div className="space-y-2">
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Thumbnail Alt Text</label>
+                  <input 
+                    type="text"
+                    value={formData.thumbnailAlt}
+                    onChange={(e) => setFormData({...formData, thumbnailAlt: e.target.value})}
+                    className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-purple-500/20 outline-none dark:text-white"
+                    placeholder="Describe the thumbnail for SEO..."
+                  />
+                </div>
+                <div className="space-y-2">
                   <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Publish Date</label>
                   <input 
                     required
@@ -325,6 +353,42 @@ export function AdminBlog() {
                     className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-purple-500/20 outline-none dark:text-white font-mono text-sm"
                     placeholder="# Your article starts here..."
                   />
+                </div>
+              </div>
+
+              <div className="border-t border-slate-200 dark:border-slate-800 pt-6">
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-4 uppercase tracking-wider">SEO Settings</h3>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Meta Title</label>
+                    <input 
+                      type="text"
+                      value={formData.seo.metaTitle}
+                      onChange={(e) => setFormData({...formData, seo: {...formData.seo, metaTitle: e.target.value}})}
+                      className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-purple-500/20 outline-none dark:text-white"
+                      placeholder="Custom SEO title..."
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Meta Description</label>
+                    <textarea 
+                      rows={2}
+                      value={formData.seo.metaDescription}
+                      onChange={(e) => setFormData({...formData, seo: {...formData.seo, metaDescription: e.target.value}})}
+                      className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-purple-500/20 outline-none dark:text-white"
+                      placeholder="Custom SEO description..."
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Keywords</label>
+                    <input 
+                      type="text"
+                      value={formData.seo.metaKeywords}
+                      onChange={(e) => setFormData({...formData, seo: {...formData.seo, metaKeywords: e.target.value}})}
+                      className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-purple-500/20 outline-none dark:text-white"
+                      placeholder="AI, blog, etc."
+                    />
+                  </div>
                 </div>
               </div>
 

@@ -6,6 +6,7 @@ import { BlogPost as BlogPostType } from '../types';
 import { Loader2, Calendar, ArrowLeft, Clock, Share2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { motion } from 'motion/react';
+import { SEO } from '../components/SEO';
 
 export function BlogPost() {
   const { id } = useParams<{ id: string }>();
@@ -48,8 +49,32 @@ export function BlogPost() {
     );
   }
 
+  // Article Structured Data
+  const articleData = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": post.seo?.metaTitle || post.title,
+    "description": post.seo?.metaDescription || post.description,
+    "image": post.thumbnail,
+    "datePublished": post.date,
+    "author": {
+      "@type": "Organization",
+      "name": "Neural"
+    }
+  };
+
   return (
     <div className="pt-32 pb-24 min-h-screen bg-slate-950 text-white">
+      <SEO 
+        pageId={`blog-${post.id}`}
+        dynamicData={{
+          title: post.seo?.metaTitle || post.title,
+          description: post.seo?.metaDescription || post.description,
+          keywords: post.seo?.metaKeywords,
+          ogImage: post.thumbnail
+        }}
+        structuredData={articleData}
+      />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <Link to="/blog" className="inline-flex items-center text-sm font-bold text-slate-400 hover:text-purple-400 transition-colors mb-8 group">
           <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
@@ -80,9 +105,10 @@ export function BlogPost() {
           <div className="aspect-[21/9] rounded-[2.5rem] overflow-hidden mb-12 shadow-2xl ring-1 ring-white/10">
             <img 
               src={post.thumbnail || "/placeholder.jpg"} 
-              alt={post.title}
+              alt={post.thumbnailAlt || post.title}
               className="w-full h-full object-cover"
               referrerPolicy="no-referrer"
+              loading="lazy"
             />
           </div>
 

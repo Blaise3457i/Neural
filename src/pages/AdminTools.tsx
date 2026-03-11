@@ -34,9 +34,15 @@ export function AdminTools() {
     category: 'Image',
     isFree: true,
     image: '',
+    imageAlt: '',
     link: '',
     published: true,
-    featured: false
+    featured: false,
+    seo: {
+      metaTitle: '',
+      metaDescription: '',
+      metaKeywords: ''
+    }
   });
 
   const fetchTools = async () => {
@@ -72,9 +78,15 @@ export function AdminTools() {
         category: tool.category,
         isFree: tool.isFree,
         image: tool.image,
+        imageAlt: tool.imageAlt || '',
         link: tool.link,
-        published: tool.published,
-        featured: tool.featured || false
+        published: tool.published || false,
+        featured: tool.featured || false,
+        seo: {
+          metaTitle: tool.seo?.metaTitle || '',
+          metaDescription: tool.seo?.metaDescription || '',
+          metaKeywords: tool.seo?.metaKeywords || ''
+        }
       });
     } else {
       setEditingTool(null);
@@ -84,9 +96,15 @@ export function AdminTools() {
         category: 'Image',
         isFree: true,
         image: '',
+        imageAlt: '',
         link: '',
         published: true,
-        featured: false
+        featured: false,
+        seo: {
+          metaTitle: '',
+          metaDescription: '',
+          metaKeywords: ''
+        }
       });
     }
     setIsModalOpen(true);
@@ -341,6 +359,52 @@ export function AdminTools() {
                     onChange={(e) => setFormData({...formData, image: e.target.value})}
                     className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-purple-500/20 outline-none dark:text-white"
                   />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Image Alt Text</label>
+                  <input 
+                    type="text"
+                    value={formData.imageAlt}
+                    onChange={(e) => setFormData({...formData, imageAlt: e.target.value})}
+                    className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-purple-500/20 outline-none dark:text-white"
+                    placeholder="Describe the image for SEO..."
+                  />
+                </div>
+              </div>
+
+              <div className="border-t border-slate-200 dark:border-slate-800 pt-6">
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-4 uppercase tracking-wider">SEO Settings</h3>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Meta Title</label>
+                    <input 
+                      type="text"
+                      value={formData.seo.metaTitle}
+                      onChange={(e) => setFormData({...formData, seo: {...formData.seo, metaTitle: e.target.value}})}
+                      className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-purple-500/20 outline-none dark:text-white"
+                      placeholder="Custom SEO title..."
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Meta Description</label>
+                    <textarea 
+                      rows={2}
+                      value={formData.seo.metaDescription}
+                      onChange={(e) => setFormData({...formData, seo: {...formData.seo, metaDescription: e.target.value}})}
+                      className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-purple-500/20 outline-none dark:text-white"
+                      placeholder="Custom SEO description..."
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Keywords</label>
+                    <input 
+                      type="text"
+                      value={formData.seo.metaKeywords}
+                      onChange={(e) => setFormData({...formData, seo: {...formData.seo, metaKeywords: e.target.value}})}
+                      className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-purple-500/20 outline-none dark:text-white"
+                      placeholder="AI, tool, etc."
+                    />
+                  </div>
                 </div>
               </div>
 

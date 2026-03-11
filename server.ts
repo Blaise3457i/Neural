@@ -5,11 +5,20 @@ import path from "path";
 import { fileURLToPath } from "url";
 import multer from "multer";
 import fs from "fs";
+import admin from "firebase-admin";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 dotenv.config();
+
+// Initialize Firebase Admin
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.applicationDefault()
+  });
+}
+const db = admin.firestore();
 
 // Configure Multer for file uploads
 const storage = multer.diskStorage({
@@ -33,6 +42,69 @@ async function startServer() {
   const PORT = 3000;
 
   app.use(express.json());
+
+  // Robots.txt
+  app.get("/robots.txt", (req, res) => {
+    const appUrl = process.env.APP_URL || `http://localhost:${PORT}`;
+    const robots = `User-agent: *
+Allow: /
+Sitemap: ${appUrl}/sitemap.xml`;
+    res.header("Content-Type", "text/plain");
+    res.send(robots);
+  });
+
+  // Sitemap.xml
+  app.get("/sitemap.xml", async (req, res) => {
+    const appUrl = process.env.APP_URL || `http://localhost:${PORT}`;
+    
+    try {
+      // Fetch dynamic content
+      const [toolsSnap, blogsSnap] = await Promise.all([
+        db.collection('tools').where('published', '==', true).get(),
+        db.collection('blogs').where('published', '==', true).get()
+      ]);
+
+      const tools = toolsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const blogs = blogsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+      // Static pages
+      const staticPages = [
+        '',
+        '/tools',
+        '/prompts',
+        '/tutorials',
+        '/blog'
+      ];
+
+      const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  ${staticPages.map(page => `
+  <url>
+    <loc>${appUrl}${page}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>${page === '' ? '1.0' : '0.8'}</priority>
+  </url>`).join('')}
+  ${tools.map(tool => `
+  <url>
+    <loc>${appUrl}/tool/${tool.id}</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>`).join('')}
+  ${blogs.map(post => `
+  <url>
+    <loc>${appUrl}/blog/${post.id}</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>`).join('')}
+</urlset>`;
+
+      res.header("Content-Type", "application/xml");
+      res.send(sitemap);
+    } catch (error) {
+      console.error("Sitemap generation failed:", error);
+      res.status(500).send("Error generating sitemap");
+    }
+  });
 
   // Media Upload Route
   app.post("/api/admin/upload", upload.single("file"), (req, res) => {

@@ -1,3 +1,9 @@
+export interface SEOFields {
+  metaTitle?: string;
+  metaDescription?: string;
+  metaKeywords?: string;
+}
+
 export interface AITool {
   id: string;
   name: string;
@@ -5,9 +11,11 @@ export interface AITool {
   category: 'Image' | 'Video' | 'Audio' | 'Text' | 'Productivity' | 'Misc';
   isFree: boolean;
   image: string;
+  imageAlt?: string;
   link: string;
   published?: boolean;
   featured?: boolean;
+  seo?: SEOFields;
 }
 
 export interface AIPrompt {
@@ -37,10 +45,12 @@ export interface BlogPost {
   title: string;
   description: string;
   thumbnail: string;
+  thumbnailAlt?: string;
   date: string;
   trending?: boolean;
   published?: boolean;
   content?: string;
+  seo?: SEOFields;
 }
 
 export interface AIProvider {
