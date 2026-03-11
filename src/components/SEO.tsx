@@ -55,7 +55,7 @@ export function SEO({ pageId, dynamicData, structuredData, type = 'website' }: S
     canonicalURL: dynamicData?.canonical || seo?.canonicalURL || window.location.href,
     openGraphTitle: dynamicData?.title || seo?.openGraphTitle || seo?.metaTitle || 'Neural',
     openGraphDescription: dynamicData?.description || seo?.openGraphDescription || seo?.metaDescription || '',
-    openGraphImage: dynamicData?.ogImage || seo?.openGraphImage || 'https://futurestack.ai/og-image.jpg',
+    openGraphImage: dynamicData?.ogImage || seo?.openGraphImage || 'https://ai-free-hub-phi.vercel.app/og-image.jpg',
     robotsIndex: seo?.robotsIndex !== undefined ? seo.robotsIndex : true,
     structuredData: structuredData || seo?.structuredData,
   };
