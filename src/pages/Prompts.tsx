@@ -1,13 +1,15 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, lazy, Suspense } from 'react';
 import { Sparkles, TrendingUp, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { PromptCard } from '../components/PromptCard';
 import { PromptSkeleton } from '../components/PromptSkeleton';
 import { SearchBar } from '../components/SearchBar';
 import { useSearchParams } from 'react-router-dom';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { SEO } from '../components/SEO';
+
+// Lazy load PromptCard
+const PromptCard = lazy(() => import('../components/PromptCard').then(m => ({ default: m.PromptCard })));
 
 const CATEGORIES = ['All', 'Image', 'Text', 'Video'];
 
@@ -62,7 +64,7 @@ export function Prompts() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h1 className="text-4xl lg:text-6xl font-black text-slate-900 dark:text-white mb-6">Prompt Library</h1>
-          <p className="text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto mb-10">
+          <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-10">
             Unlock the full potential of AI with our curated collection of high-performing prompts.
           </p>
           
@@ -81,9 +83,11 @@ export function Prompts() {
             <h2 className="text-xl font-bold dark:text-white">Trending Now</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {prompts.slice(0, 3).map(prompt => (
-              <PromptCard key={prompt.id} prompt={prompt} />
-            ))}
+            <Suspense fallback={prompts.slice(0, 3).map((_, i) => <PromptSkeleton key={i} />)}>
+              {prompts.slice(0, 3).map(prompt => (
+                <PromptCard key={prompt.id} prompt={prompt} />
+              ))}
+            </Suspense>
           </div>
         </div>
 
@@ -98,7 +102,7 @@ export function Prompts() {
                   className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all whitespace-nowrap ${
                     activeCategory === cat 
                       ? 'bg-white dark:bg-slate-700 text-purple-600 dark:text-purple-400 shadow-sm' 
-                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
                   {cat}
@@ -122,21 +126,23 @@ export function Prompts() {
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
             >
               <AnimatePresence mode="popLayout">
-                {filteredPrompts.map((prompt, index) => (
-                  <motion.div
-                    key={prompt.id}
-                    layout
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ 
-                      duration: 0.3, 
-                      delay: Math.min(index * 0.05, 0.5) 
-                    }}
-                  >
-                    <PromptCard prompt={prompt} />
-                  </motion.div>
-                ))}
+                <Suspense fallback={filteredPrompts.map((_, i) => <PromptSkeleton key={i} />)}>
+                  {filteredPrompts.map((prompt, index) => (
+                    <motion.div
+                      key={prompt.id}
+                      layout
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{ 
+                        duration: 0.3, 
+                        delay: Math.min(index * 0.05, 0.5) 
+                      }}
+                    >
+                      <PromptCard prompt={prompt} />
+                    </motion.div>
+                  ))}
+                </Suspense>
               </AnimatePresence>
             </motion.div>
           ) : (
@@ -149,7 +155,7 @@ export function Prompts() {
                 <Sparkles className="w-8 h-8 text-slate-400" />
               </div>
               <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">No prompts found</h3>
-              <p className="text-slate-500 dark:text-slate-400">Try adjusting your search or filters.</p>
+              <p className="text-slate-600 dark:text-slate-400">Try adjusting your search or filters.</p>
             </motion.div>
           )}
         </div>

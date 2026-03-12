@@ -26,6 +26,8 @@ export function PromptCard({ prompt }: PromptCardProps) {
           <img 
             src={prompt.outputImage} 
             alt={`AI generated output for prompt: ${prompt.text.substring(0, 50)}...`} 
+            width={400}
+            height={300}
             className="w-full h-full object-cover"
             referrerPolicy="no-referrer"
           />
@@ -36,12 +38,12 @@ export function PromptCard({ prompt }: PromptCardProps) {
           <span className="px-2.5 py-1 rounded-md bg-purple-50 dark:bg-purple-900/30 text-[10px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider">
             {prompt.category}
           </span>
-          <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+          <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
             {prompt.badge}
           </span>
         </div>
         <div className="relative group">
-          <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed mb-6 italic line-clamp-3">
+          <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed mb-6 italic line-clamp-3">
             "{prompt.text}"
           </p>
         </div>

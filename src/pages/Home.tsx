@@ -1,17 +1,20 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowRight, Sparkles, Zap, Shield, Globe, Play, Loader2, CheckCircle2 } from 'lucide-react';
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
-import { ToolCard } from '../components/ToolCard';
 import { ToolSkeleton } from '../components/ToolSkeleton';
 import { SearchBar } from '../components/SearchBar';
-import { PromptCard } from '../components/PromptCard';
 import { PromptSkeleton } from '../components/PromptSkeleton';
-import { TutorialCard } from '../components/TutorialCard';
 import { TutorialSkeleton } from '../components/TutorialSkeleton';
 import { collection, getDocs, limit, query } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { SEO } from '../components/SEO';
+
+// Lazy load card components
+const ToolCard = lazy(() => import('../components/ToolCard').then(m => ({ default: m.ToolCard })));
+const PromptCard = lazy(() => import('../components/PromptCard').then(m => ({ default: m.PromptCard })));
+const TutorialCard = lazy(() => import('../components/TutorialCard').then(m => ({ default: m.TutorialCard })));
+const BlogCard = lazy(() => import('../components/BlogCard').then(m => ({ default: m.BlogCard })));
 
 const HERO_VIDEOS = [
   'https://cdn.pixabay.com/video/2023/10/20/185834-876356710_large.mp4',
@@ -284,7 +287,7 @@ export function Home() {
                   <stat.icon className="w-7 h-7 text-purple-600 dark:text-purple-400" />
                 </div>
                 <div className="text-3xl font-black text-slate-900 dark:text-white mb-1">{stat.value}</div>
-                <div className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em]">{stat.label}</div>
+                <div className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-[0.2em]">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -296,7 +299,7 @@ export function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
             <h2 className="text-4xl lg:text-6xl font-black text-slate-900 dark:text-white mb-6">Featured AI Tools</h2>
-            <p className="text-xl text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">Hand-picked AI tools that offer incredible value for free. Boost your creative output today.</p>
+            <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">Hand-picked AI tools that offer incredible value for free. Boost your creative output today.</p>
           </div>
 
           <div className="space-y-24">
@@ -317,9 +320,11 @@ export function Home() {
                       <ToolSkeleton key={i} />
                     ))
                   ) : (
-                    category.tools.map(tool => (
-                      <ToolCard key={tool.id} tool={tool} />
-                    ))
+                    <Suspense fallback={category.tools.map((_, i) => <ToolSkeleton key={i} />)}>
+                      {category.tools.map(tool => (
+                        <ToolCard key={tool.id} tool={tool} />
+                      ))}
+                    </Suspense>
                   )}
                 </div>
               </div>
@@ -334,7 +339,7 @@ export function Home() {
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 space-y-6 md:space-y-0">
             <div>
               <h2 className="text-4xl lg:text-5xl font-black text-slate-900 dark:text-white mb-4">Trending Prompts</h2>
-              <p className="text-xl text-slate-500 dark:text-slate-400 max-w-xl">The most popular prompts used by our community to generate stunning results.</p>
+              <p className="text-xl text-slate-600 dark:text-slate-400 max-w-xl">The most popular prompts used by our community to generate stunning results.</p>
             </div>
             <Link to="/prompts" className="inline-flex items-center bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white px-8 py-4 rounded-2xl font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">
               Browse Library <ArrowRight className="w-4 h-4 ml-2" />
@@ -346,9 +351,11 @@ export function Home() {
                 <PromptSkeleton key={i} />
               ))
             ) : (
-              featuredPrompts.map(prompt => (
-                <PromptCard key={prompt.id} prompt={prompt} />
-              ))
+              <Suspense fallback={featuredPrompts.map((_, i) => <PromptSkeleton key={i} />)}>
+                {featuredPrompts.map(prompt => (
+                  <PromptCard key={prompt.id} prompt={prompt} />
+                ))}
+              </Suspense>
             )}
           </div>
         </div>
@@ -361,7 +368,7 @@ export function Home() {
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 space-y-4 md:space-y-0">
             <div>
               <h2 className="text-3xl lg:text-4xl font-black mb-4">Latest Tutorials</h2>
-              <p className="text-slate-400 max-w-xl">Learn how to master AI tools with our step-by-step guides and expert tips.</p>
+              <p className="text-slate-300 max-w-xl">Learn how to master AI tools with our step-by-step guides and expert tips.</p>
             </div>
             <Link to="/tutorials" className="inline-flex items-center text-purple-400 font-bold hover:underline">
               All Tutorials <ArrowRight className="w-4 h-4 ml-2" />
@@ -373,9 +380,11 @@ export function Home() {
                 <TutorialSkeleton key={i} />
               ))
             ) : (
-              featuredTutorials.map(tutorial => (
-                <TutorialCard key={tutorial.id} tutorial={tutorial} />
-              ))
+              <Suspense fallback={featuredTutorials.map((_, i) => <TutorialSkeleton key={i} />)}>
+                {featuredTutorials.map(tutorial => (
+                  <TutorialCard key={tutorial.id} tutorial={tutorial} />
+                ))}
+              </Suspense>
             )}
           </div>
         </div>
@@ -387,20 +396,20 @@ export function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div>
               <h2 className="text-4xl lg:text-5xl font-black text-slate-900 dark:text-white mb-8">Why Choose Neural?</h2>
-              <p className="text-lg text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
+              <p className="text-lg text-slate-700 dark:text-slate-300 mb-6 leading-relaxed">
                 In a world where artificial intelligence is rapidly changing how we work and create, finding the right tools shouldn't be expensive. Neural is your dedicated resource for discovering the most powerful <strong>free AI tools</strong> and <strong>AI prompts</strong> available today.
               </p>
-              <p className="text-lg text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">
+              <p className="text-lg text-slate-700 dark:text-slate-300 mb-8 leading-relaxed">
                 Whether you're looking for <strong>free AI image generators</strong> like Stable Diffusion, <strong>AI video creation tools</strong>, or <strong>ChatGPT prompts</strong> to enhance your workflow, our curated directory has everything you need to stay ahead of the curve.
               </p>
               <div className="grid grid-cols-2 gap-6">
                 <div className="p-6 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700">
                   <div className="text-2xl font-black text-purple-600 mb-1">500+</div>
-                  <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">Free Tools</div>
+                  <div className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Free Tools</div>
                 </div>
                 <div className="p-6 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700">
                   <div className="text-2xl font-black text-blue-600 mb-1">2k+</div>
-                  <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">Expert Prompts</div>
+                  <div className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Expert Prompts</div>
                 </div>
               </div>
             </div>
@@ -409,6 +418,8 @@ export function Home() {
                 <img 
                   src="https://picsum.photos/seed/ai-seo/800/800" 
                   alt="Neural - The Best Free AI Tools Directory" 
+                  width={800}
+                  height={800}
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
                 />
@@ -419,7 +430,7 @@ export function Home() {
                 </p>
                 <div className="mt-4 flex items-center">
                   <div className="w-8 h-8 rounded-full bg-purple-100 mr-3"></div>
-                  <div className="text-xs font-black text-slate-400 uppercase tracking-widest">Verified Review</div>
+                  <div className="text-xs font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest">Verified Review</div>
                 </div>
               </div>
             </div>

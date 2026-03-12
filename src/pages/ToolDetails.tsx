@@ -79,7 +79,7 @@ export function ToolDetails() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <button 
           onClick={() => navigate(-1)}
-          className="flex items-center text-slate-500 hover:text-purple-600 transition-colors mb-8 group"
+          className="flex items-center text-slate-600 dark:text-slate-400 hover:text-purple-600 transition-colors mb-8 group"
         >
           <ArrowLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" />
           Back to Tools
@@ -96,6 +96,8 @@ export function ToolDetails() {
               <img 
                 src={tool.image} 
                 alt={tool.imageAlt || tool.name} 
+                width={600}
+                height={400}
                 className="max-w-full max-h-full object-contain"
                 referrerPolicy="no-referrer"
                 loading="lazy"
@@ -111,17 +113,17 @@ export function ToolDetails() {
               <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 text-center">
                 <Star className="w-6 h-6 text-amber-400 mx-auto mb-2" />
                 <span className="block text-xl font-black text-slate-900 dark:text-white">4.9</span>
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Rating</span>
+                <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-widest">Rating</span>
               </div>
               <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 text-center">
                 <Zap className="w-6 h-6 text-purple-600 mx-auto mb-2" />
                 <span className="block text-xl font-black text-slate-900 dark:text-white">Fast</span>
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Speed</span>
+                <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-widest">Speed</span>
               </div>
               <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 text-center">
                 <Shield className="w-6 h-6 text-emerald-500 mx-auto mb-2" />
                 <span className="block text-xl font-black text-slate-900 dark:text-white">Safe</span>
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Verified</span>
+                <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-widest">Verified</span>
               </div>
             </div>
           </motion.div>
@@ -139,7 +141,7 @@ export function ToolDetails() {
               <h1 className="text-4xl lg:text-6xl font-black text-slate-900 dark:text-white mb-6 leading-tight">
                 {tool.name}
               </h1>
-              <p className="text-xl text-slate-500 dark:text-slate-400 leading-relaxed">
+              <p className="text-xl text-slate-600 dark:text-slate-400 leading-relaxed">
                 {tool.description}
               </p>
             </div>

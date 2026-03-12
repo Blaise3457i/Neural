@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react';
-import { BlogCard } from '../components/BlogCard';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { BlogSkeleton } from '../components/BlogSkeleton';
 import { Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -7,6 +6,9 @@ import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useNavigate } from 'react-router-dom';
 import { SEO } from '../components/SEO';
+
+// Lazy load BlogCard
+const BlogCard = lazy(() => import('../components/BlogCard').then(m => ({ default: m.BlogCard })));
 
 export function Blog() {
   const navigate = useNavigate();
@@ -48,7 +50,7 @@ export function Blog() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h1 className="text-4xl lg:text-6xl font-black text-slate-900 dark:text-white mb-6">AI Insights</h1>
-          <p className="text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
+          <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
             Stay updated with the latest trends, news, and deep dives into the world of artificial intelligence.
           </p>
         </div>
@@ -76,6 +78,8 @@ export function Blog() {
                     <img 
                       src={featuredPost.thumbnail || "/placeholder.jpg"} 
                       alt={featuredPost.title} 
+                      width={1200}
+                      height={500}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                       referrerPolicy="no-referrer"
                     />
@@ -105,21 +109,23 @@ export function Blog() {
                 className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
               >
                 <AnimatePresence mode="popLayout">
-                  {publishedPosts.map((post, index) => (
-                    <motion.div
-                      key={post.id}
-                      layout
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                      transition={{ 
-                        duration: 0.3, 
-                        delay: Math.min(index * 0.05, 0.5) 
-                      }}
-                    >
-                      <BlogCard post={post} />
-                    </motion.div>
-                  ))}
+                  <Suspense fallback={publishedPosts.map((_, i) => <BlogSkeleton key={i} />)}>
+                    {publishedPosts.map((post, index) => (
+                      <motion.div
+                        key={post.id}
+                        layout
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.9 }}
+                        transition={{ 
+                          duration: 0.3, 
+                          delay: Math.min(index * 0.05, 0.5) 
+                        }}
+                      >
+                        <BlogCard post={post} />
+                      </motion.div>
+                    ))}
+                  </Suspense>
                 </AnimatePresence>
               </motion.div>
             </>

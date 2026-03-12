@@ -12,39 +12,39 @@ export function Footer() {
               <Logo className="w-8 h-8" />
               <span className="text-lg font-bold text-slate-900 dark:text-white">Neural</span>
             </Link>
-            <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6">
+            <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-6">
               The ultimate destination for discovering free AI tools, curated prompts, and expert tutorials to boost your productivity.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-slate-400 hover:text-purple-600 transition-colors"><Twitter className="w-5 h-5" /></a>
-              <a href="#" className="text-slate-400 hover:text-purple-600 transition-colors"><Github className="w-5 h-5" /></a>
-              <a href="#" className="text-slate-400 hover:text-purple-600 transition-colors"><Linkedin className="w-5 h-5" /></a>
+              <a href="#" className="text-slate-600 dark:text-slate-400 hover:text-purple-600 transition-colors"><Twitter className="w-5 h-5" /></a>
+              <a href="#" className="text-slate-600 dark:text-slate-400 hover:text-purple-600 transition-colors"><Github className="w-5 h-5" /></a>
+              <a href="#" className="text-slate-600 dark:text-slate-400 hover:text-purple-600 transition-colors"><Linkedin className="w-5 h-5" /></a>
             </div>
           </div>
 
           <div>
             <h4 className="font-bold text-slate-900 dark:text-white mb-6">Explore</h4>
             <ul className="space-y-4 text-sm">
-              <li><Link to="/tools" className="text-slate-500 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">AI Tools Directory</Link></li>
-              <li><Link to="/prompts" className="text-slate-500 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Prompt Library</Link></li>
-              <li><Link to="/tutorials" className="text-slate-500 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Tutorials</Link></li>
-              <li><Link to="/blog" className="text-slate-500 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Latest News</Link></li>
+              <li><Link to="/tools" className="text-slate-600 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">AI Tools Directory</Link></li>
+              <li><Link to="/prompts" className="text-slate-600 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Prompt Library</Link></li>
+              <li><Link to="/tutorials" className="text-slate-600 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Tutorials</Link></li>
+              <li><Link to="/blog" className="text-slate-600 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Latest News</Link></li>
             </ul>
           </div>
 
           <div>
             <h4 className="font-bold text-slate-900 dark:text-white mb-6">Company</h4>
             <ul className="space-y-4 text-sm">
-              <li><Link to="/about" className="text-slate-500 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">About Us</Link></li>
-              <li><Link to="/privacy" className="text-slate-500 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Privacy Policy</Link></li>
-              <li><Link to="/privacy" className="text-slate-500 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Terms of Service</Link></li>
-              <li><Link to="/contact" className="text-slate-500 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Contact</Link></li>
+              <li><Link to="/about" className="text-slate-600 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">About Us</Link></li>
+              <li><Link to="/privacy" className="text-slate-600 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Privacy Policy</Link></li>
+              <li><Link to="/privacy" className="text-slate-600 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Terms of Service</Link></li>
+              <li><Link to="/contact" className="text-slate-600 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Contact</Link></li>
             </ul>
           </div>
 
           <div>
             <h4 className="font-bold text-slate-900 dark:text-white mb-6">Newsletter</h4>
-            <p className="text-slate-500 dark:text-slate-400 text-sm mb-4">Get the latest AI tools delivered to your inbox.</p>
+            <p className="text-slate-600 dark:text-slate-400 text-sm mb-4">Get the latest AI tools delivered to your inbox.</p>
             <form className="relative">
               <input 
                 type="email" 
@@ -58,7 +58,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-slate-200 dark:border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 text-xs text-slate-400">
+        <div className="border-t border-slate-200 dark:border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 text-xs text-slate-600 dark:text-slate-400">
           <p>© 2026 Neural. All rights reserved.</p>
           <div className="flex space-x-6">
             <Link to="/privacy" className="hover:text-purple-600 transition-colors">Privacy</Link>

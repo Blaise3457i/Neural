@@ -20,6 +20,8 @@ export function BlogCard({ post }: BlogCardProps) {
         <img 
           src={post.thumbnail || "/placeholder.jpg"} 
           alt={post.thumbnailAlt || post.title}
+          width={400}
+          height={250}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           referrerPolicy="no-referrer"
           loading="lazy"
@@ -33,14 +35,14 @@ export function BlogCard({ post }: BlogCardProps) {
         )}
       </div>
       <div className="p-6">
-        <div className="flex items-center text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-3">
+        <div className="flex items-center text-slate-600 dark:text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-3">
           <Calendar className="w-3 h-3 mr-1.5" />
           <span>{post.date}</span>
         </div>
         <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3 line-clamp-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
           {post.title}
         </h3>
-        <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2 mb-6">
+        <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mb-6">
           {post.description}
         </p>
         <button className="flex items-center text-sm font-bold text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">

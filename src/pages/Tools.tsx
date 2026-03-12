@@ -1,7 +1,6 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, lazy, Suspense } from 'react';
 import { Search, Filter, SlidersHorizontal, ShieldCheck, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ToolCard } from '../components/ToolCard';
 import { ToolSkeleton } from '../components/ToolSkeleton';
 import { SearchBar } from '../components/SearchBar';
 import { ProviderCard } from '../components/ProviderCard';
@@ -10,6 +9,9 @@ import { useSearchParams } from 'react-router-dom';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { SEO } from '../components/SEO';
+
+// Lazy load ToolCard
+const ToolCard = lazy(() => import('../components/ToolCard').then(m => ({ default: m.ToolCard })));
 
 const CATEGORIES = ['All', 'Image', 'Video', 'Audio', 'Text', 'Productivity', 'Misc'];
 
@@ -78,7 +80,7 @@ export function Tools() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h1 className="text-4xl lg:text-6xl font-black text-slate-900 dark:text-white mb-6">AI Tools Directory</h1>
-          <p className="text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto mb-10">
+          <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-10">
             Browse our curated collection of the best free and freemium AI tools available today.
           </p>
           <SearchBar 
@@ -100,7 +102,7 @@ export function Tools() {
                   className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all whitespace-nowrap ${
                     activeCategory === cat 
                       ? 'bg-white dark:bg-slate-700 text-purple-600 dark:text-purple-400 shadow-sm' 
-                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
                   {cat}
@@ -127,21 +129,23 @@ export function Tools() {
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
             >
               <AnimatePresence mode="popLayout">
-                {filteredTools.map((tool, index) => (
-                  <motion.div
-                    key={tool.id}
-                    layout
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ 
-                      duration: 0.3, 
-                      delay: Math.min(index * 0.05, 0.5) 
-                    }}
-                  >
-                    <ToolCard tool={tool} />
-                  </motion.div>
-                ))}
+                <Suspense fallback={filteredTools.map((_, i) => <ToolSkeleton key={i} />)}>
+                  {filteredTools.map((tool, index) => (
+                    <motion.div
+                      key={tool.id}
+                      layout
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{ 
+                        duration: 0.3, 
+                        delay: Math.min(index * 0.05, 0.5) 
+                      }}
+                    >
+                      <ToolCard tool={tool} />
+                    </motion.div>
+                  ))}
+                </Suspense>
               </AnimatePresence>
             </motion.div>
           ) : (
@@ -210,19 +214,19 @@ export function Tools() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
             <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-100 dark:border-slate-700">
               <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Are these AI tools really free?</h3>
-              <p className="text-slate-500 dark:text-slate-400 leading-relaxed">Yes! We specifically curate tools that offer a generous free tier or are completely open-source. Some may have "freemium" models where advanced features require a subscription, but the core functionality we list is accessible for free.</p>
+              <p className="text-slate-600 dark:text-slate-400 leading-relaxed">Yes! We specifically curate tools that offer a generous free tier or are completely open-source. Some may have "freemium" models where advanced features require a subscription, but the core functionality we list is accessible for free.</p>
             </div>
             <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-100 dark:border-slate-700">
               <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">What are the best free AI image generators?</h3>
-              <p className="text-slate-500 dark:text-slate-400 leading-relaxed">Currently, tools like Stable Diffusion, Craiyon (formerly DALL-E Mini), and Adobe Firefly (with free credits) are among the top choices for generating high-quality AI art without a cost.</p>
+              <p className="text-slate-600 dark:text-slate-400 leading-relaxed">Currently, tools like Stable Diffusion, Craiyon (formerly DALL-E Mini), and Adobe Firefly (with free credits) are among the top choices for generating high-quality AI art without a cost.</p>
             </div>
             <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-100 dark:border-slate-700">
               <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Can I use these tools for commercial projects?</h3>
-              <p className="text-slate-500 dark:text-slate-400 leading-relaxed">It depends on the specific tool's license. Open-source models like Stable Diffusion often allow commercial use, while others may restrict free-tier outputs to personal use. Always check the individual tool's terms of service.</p>
+              <p className="text-slate-600 dark:text-slate-400 leading-relaxed">It depends on the specific tool's license. Open-source models like Stable Diffusion often allow commercial use, while others may restrict free-tier outputs to personal use. Always check the individual tool's terms of service.</p>
             </div>
             <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-100 dark:border-slate-700">
               <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">How often is the Neural directory updated?</h3>
-              <p className="text-slate-500 dark:text-slate-400 leading-relaxed">We update our directory daily to include the latest releases in the AI world. Our team manually verifies each tool to ensure it meets our quality and "free-to-use" standards.</p>
+              <p className="text-slate-600 dark:text-slate-400 leading-relaxed">We update our directory daily to include the latest releases in the AI world. Our team manually verifies each tool to ensure it meets our quality and "free-to-use" standards.</p>
             </div>
           </div>
         </section>

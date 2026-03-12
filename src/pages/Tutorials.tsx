@@ -1,12 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { BookOpen, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { TutorialCard } from '../components/TutorialCard';
 import { TutorialSkeleton } from '../components/TutorialSkeleton';
 import { SearchBar } from '../components/SearchBar';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { SEO } from '../components/SEO';
+
+// Lazy load TutorialCard
+const TutorialCard = lazy(() => import('../components/TutorialCard').then(m => ({ default: m.TutorialCard })));
 
 const CATEGORIES = ['All', 'AI Art', 'AI Writing', 'AI Automation', 'Marketing'];
 
@@ -59,7 +61,7 @@ export function Tutorials() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h1 className="text-4xl lg:text-6xl font-black text-slate-900 dark:text-white mb-6">AI Tutorials</h1>
-          <p className="text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto mb-10">
+          <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-10">
             Step-by-step guides to help you master the latest AI tools and technologies.
           </p>
           <SearchBar 
@@ -79,7 +81,7 @@ export function Tutorials() {
               className={`px-8 py-3 rounded-2xl text-sm font-bold transition-all whitespace-nowrap ${
                 activeCategory === cat 
                   ? 'bg-purple-600 text-white shadow-xl shadow-purple-500/20' 
-                  : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
               }`}
             >
               {cat}
@@ -101,21 +103,23 @@ export function Tutorials() {
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-12"
             >
               <AnimatePresence mode="popLayout">
-                {filteredTutorials.map((tutorial, index) => (
-                  <motion.div
-                    key={tutorial.id}
-                    layout
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ 
-                      duration: 0.3, 
-                      delay: Math.min(index * 0.05, 0.5) 
-                    }}
-                  >
-                    <TutorialCard tutorial={tutorial} />
-                  </motion.div>
-                ))}
+                <Suspense fallback={filteredTutorials.map((_, i) => <TutorialSkeleton key={i} />)}>
+                  {filteredTutorials.map((tutorial, index) => (
+                    <motion.div
+                      key={tutorial.id}
+                      layout
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{ 
+                        duration: 0.3, 
+                        delay: Math.min(index * 0.05, 0.5) 
+                      }}
+                    >
+                      <TutorialCard tutorial={tutorial} />
+                    </motion.div>
+                  ))}
+                </Suspense>
               </AnimatePresence>
             </motion.div>
           ) : (
@@ -128,7 +132,7 @@ export function Tutorials() {
                 <BookOpen className="w-8 h-8 text-slate-400" />
               </div>
               <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">No tutorials found</h3>
-              <p className="text-slate-500 dark:text-slate-400">Try adjusting your filters or search for something else.</p>
+              <p className="text-slate-600 dark:text-slate-400">Try adjusting your filters or search for something else.</p>
             </motion.div>
           )}
         </div>

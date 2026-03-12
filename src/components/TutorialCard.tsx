@@ -16,6 +16,8 @@ export function TutorialCard({ tutorial }: TutorialCardProps) {
         <img 
           src={tutorial.thumbnail} 
           alt={tutorial.title}
+          width={400}
+          height={225}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           referrerPolicy="no-referrer"
         />
@@ -30,7 +32,7 @@ export function TutorialCard({ tutorial }: TutorialCardProps) {
           <span className="text-[10px] font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400">
             {tutorial.category}
           </span>
-          <div className="flex items-center text-slate-400 text-[10px] font-bold">
+          <div className="flex items-center text-slate-600 dark:text-slate-400 text-[10px] font-bold">
             <Clock className="w-3 h-3 mr-1" />
             <span>{tutorial.duration || '10 MIN'}</span>
           </div>
@@ -38,7 +40,7 @@ export function TutorialCard({ tutorial }: TutorialCardProps) {
         <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 line-clamp-1">
           {tutorial.title}
         </h3>
-        <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2 mb-6">
+        <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mb-6">
           {tutorial.description}
         </p>
         <a 

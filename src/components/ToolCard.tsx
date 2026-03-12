@@ -27,6 +27,8 @@ export function ToolCard({ tool }: ToolCardProps) {
             <img 
               src={tool.image} 
               alt={tool.imageAlt || tool.name}
+              width={200}
+              height={120}
               className="max-w-full max-h-full object-contain group-hover:scale-110 transition-transform duration-500"
               onError={handleImageError}
               loading="lazy"
@@ -48,12 +50,12 @@ export function ToolCard({ tool }: ToolCardProps) {
       </Link>
       <div className="p-6">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
             {tool.category}
           </span>
           <div className="flex items-center text-amber-400">
             <Star className="w-3 h-3 fill-current" />
-            <span className="text-xs font-bold ml-1 text-slate-600 dark:text-slate-400">4.9</span>
+            <span className="text-xs font-bold ml-1 text-slate-700 dark:text-slate-300">4.9</span>
           </div>
         </div>
         <Link to={`/tools/${tool.id}`}>
@@ -61,7 +63,7 @@ export function ToolCard({ tool }: ToolCardProps) {
             {tool.name}
           </h3>
         </Link>
-        <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2 mb-6">
+        <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mb-6">
           {tool.description}
         </p>
         <div className="flex items-center justify-between">

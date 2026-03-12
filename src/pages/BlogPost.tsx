@@ -106,6 +106,8 @@ export function BlogPost() {
             <img 
               src={post.thumbnail || "/placeholder.jpg"} 
               alt={post.thumbnailAlt || post.title}
+              width={1200}
+              height={500}
               className="w-full h-full object-cover"
               referrerPolicy="no-referrer"
               loading="lazy"

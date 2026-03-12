@@ -45,7 +45,7 @@ async function startServer() {
 
   // Robots.txt
   app.get("/robots.txt", (req, res) => {
-    const appUrl = process.env.APP_URL || `http://localhost:${PORT}`;
+    const appUrl = process.env.APP_URL || `https://ai-free-hub-phi.vercel.app`;
     const robots = `User-agent: *
 Allow: /
 Sitemap: ${appUrl}/sitemap.xml`;
@@ -99,13 +99,20 @@ Sitemap: ${appUrl}/sitemap.xml`;
 </urlset>`;
 
       res.header("Content-Type", "application/xml");
+      res.header("X-Robots-Tag", "index, follow");
       res.send(sitemap);
     } catch (error) {
       console.warn("Dynamic sitemap generation failed, falling back to static file:", error);
       // Fallback to static file if it exists
       const staticSitemapPath = path.join(__dirname, "public", "sitemap.xml");
-      if (fs.existsSync(staticSitemapPath)) {
-        res.header("Content-Type", "application/xml");
+      const distSitemapPath = path.join(__dirname, "dist", "sitemap.xml");
+      
+      res.header("Content-Type", "application/xml");
+      res.header("X-Robots-Tag", "index, follow");
+
+      if (fs.existsSync(distSitemapPath)) {
+        res.sendFile(distSitemapPath);
+      } else if (fs.existsSync(staticSitemapPath)) {
         res.sendFile(staticSitemapPath);
       } else {
         res.status(500).send("Error generating sitemap");
