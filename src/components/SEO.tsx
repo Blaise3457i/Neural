@@ -40,8 +40,13 @@ export function SEO({ pageId, dynamicData, structuredData, type = 'website' }: S
           if (docSnap.exists()) {
             setSeo(docSnap.data() as SEOData);
           }
-        } catch (error) {
-          console.error('Error fetching SEO data:', error);
+        } catch (error: any) {
+          // Only log if it's not a common "offline" error, or log it as a warning
+          if (error.code === 'unavailable' || error.message?.includes('offline')) {
+            console.warn('SEO data fetch failed: Firestore is offline. Using defaults.');
+          } else {
+            console.error('Error fetching SEO data:', error);
+          }
         }
       }
     }

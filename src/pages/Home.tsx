@@ -53,16 +53,22 @@ export function Home() {
 
   useEffect(() => {
     const fetchData = async () => {
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Firestore request timed out')), 15000)
+      );
+
       try {
-        const [toolsSnap, promptsSnap, tutorialsSnap] = await Promise.all([
+        const fetchPromise = Promise.all([
           getDocs(collection(db, 'tools')).catch(e => { console.warn('Tools collection inaccessible', e); return { docs: [] }; }),
           getDocs(collection(db, 'prompts')).catch(e => { console.warn('Prompts collection inaccessible', e); return { docs: [] }; }),
           getDocs(collection(db, 'tutorials')).catch(e => { console.warn('Tutorials collection inaccessible', e); return { docs: [] }; })
         ]);
+
+        const [toolsSnap, promptsSnap, tutorialsSnap] = await Promise.race([fetchPromise, timeoutPromise]) as any;
         
-        const toolsList = (toolsSnap as any).docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
-        const promptsList = (promptsSnap as any).docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
-        const tutorialsList = (tutorialsSnap as any).docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
+        const toolsList = toolsSnap.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
+        const promptsList = promptsSnap.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
+        const tutorialsList = tutorialsSnap.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
 
         setTools(toolsList);
         setPrompts(promptsList);
